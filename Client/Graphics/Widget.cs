@@ -73,8 +73,8 @@ namespace Client.Graphics
 			{
 				int left = X;
 				int top = Y;
-				int mx = _game.Client.Input.MouseX;
-				int my = _game.Client.Input.MouseY;
+				int mx = _game.Application.Input.MouseX;
+				int my = _game.Application.Input.MouseY;
 
 				if((_flags & Drawable.Flags.NoScroll) == 0)
 				{

@@ -11,7 +11,7 @@ namespace Client
 
 	public partial class Game : GameObjects.ObjectDatabase
 	{
-		public G52client Client	{ get; private set; }
+		public Application Application	{ get; private set; }
 
 		public Map Map;
 		public int Cash;
@@ -35,9 +35,9 @@ namespace Client
 		private List<MapSpawn> _enemySpawns;
 		private WaveGenerator _waveGenerator;
 
-		public Game (G52client client)
+		public Game(Application app)
 		{
-			Client = client;
+			Application = app;
 			LoadConfig();
 
 			_hud = new UI.Hud (this);
@@ -78,7 +78,7 @@ namespace Client
 			}
 
 
-			client.Input.KeyDown += delegate(OpenTK.Input.Key key)
+			app.Input.KeyDown += delegate(OpenTK.Input.Key key)
 			{
 				if(key == OpenTK.Input.Key.F1)
 				{
@@ -90,9 +90,9 @@ namespace Client
 				}
 			};
 			
-			client.Input.MouseWheelChanged += delegate(int delta)
+			app.Input.MouseWheelChanged += delegate(int delta)
 			{
-				client.Renderer.ZoomLevel = Util.Clamp(1.0f,2.0f,client.Renderer.ZoomLevel+delta/10.0f);
+				app.Renderer.ZoomLevel = Util.Clamp(1.0f,2.0f,app.Renderer.ZoomLevel+delta/10.0f);
 			};
 		}
 				
@@ -104,14 +104,15 @@ namespace Client
 			Map = new MapLoader(path).Map;
 
 			// Tell renderer to load the tilemaps.
+			var r = Application.Renderer;
 			foreach (string tilemapName in Map.TilemapNames)
 			{
-				Client.Renderer.Tilemaps[tilemapName] = new Tilemap(tilemapName);
+				r.Tilemaps[tilemapName] = new Tilemap(tilemapName);
 			}
 			
-			Client.Renderer.Backgrounds[0] = new Background (Client.Renderer, Map);
-			Client.Renderer.Backgrounds[1] = new Background (Client.Renderer, "units", Map.Width, Map.Height);
-			Client.Renderer.Backgrounds[1].Blended = true;
+			r.Backgrounds[0] = new Background (r, Map);
+			r.Backgrounds[1] = new Background (r, "units", Map.Width, Map.Height);
+			r.Backgrounds[1].Blended = true;
 		}
 
 		public void AddCollider(Collider col)
@@ -308,7 +309,7 @@ namespace Client
 				}
 			}
 
-			Renderer r = Client.Renderer;
+			Renderer r = Application.Renderer;
 
 			if(ShowNavigationMap)
 			{
@@ -325,8 +326,8 @@ namespace Client
 		{
 			get 
 			{
-				Background bg = Client.Renderer.Backgrounds[0];
-				return Client.Input.MouseX + bg.HScroll;
+				Background bg = Application.Renderer.Backgrounds[0];
+				return Application.Input.MouseX + bg.HScroll;
 			}
 		}
 
@@ -334,8 +335,8 @@ namespace Client
 		{
 			get 
 			{
-				Background bg = Client.Renderer.Backgrounds[0];
-				return Client.Input.MouseY + bg.VScroll;
+				Background bg = Application.Renderer.Backgrounds[0];
+				return Application.Input.MouseY + bg.VScroll;
 			}
 		}
 	}

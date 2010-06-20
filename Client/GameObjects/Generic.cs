@@ -75,7 +75,7 @@ namespace Client.GameObjects
 											Util.Lerp(StartColor.G/255.0f, EndColor.G/255.0f, k) * alpha,
 											Util.Lerp(StartColor.B/255.0f, EndColor.B/255.0f, k) * alpha,
 			                              	alpha);
-			_game.Client.Renderer.AddDrawable(_sprite);
+			_game.Application.Renderer.AddDrawable(_sprite);
 		}
 	}
 }

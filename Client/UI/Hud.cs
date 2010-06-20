@@ -60,7 +60,7 @@ namespace Client.UI
 		public Hud (Game game)
 		{
 			_game = game;
-			Renderer r = game.Client.Renderer;
+			Renderer r = game.Application.Renderer;
 //			_msgLine = new TextLine(r, r.Width-200, r.Height-PanelHeight/2-10, _basePriority);
 			_gameLine = new TextLine(r, 8, 8, _basePriority);
 			_rendererLine = new TextLine(r, 8, 28, _basePriority);
@@ -104,8 +104,8 @@ namespace Client.UI
 
 
 
-			game.Client.Input.MouseDown += HandleMouseDown;
-			game.Client.Input.KeyDown += HandleKeyDown;
+			game.Application.Input.MouseDown += HandleMouseDown;
+			game.Application.Input.KeyDown += HandleKeyDown;
         }
 
 		public void WriteMessage(string s)
@@ -116,7 +116,7 @@ namespace Client.UI
 
 		private void HandleMouseDown(int mouseX, int mouseY, OpenTK.Input.MouseButton button)
 		{
-			if(mouseY < _game.Client.Renderer.Height-HudToolbar.Height)
+			if(mouseY < _game.Application.Renderer.Height-HudToolbar.Height)
 			{
 				if(button == OpenTK.Input.MouseButton.Left)
 				{
@@ -276,9 +276,9 @@ namespace Client.UI
 
 		private void UpdatePointer(Game game)
 		{
-			var r = game.Client.Renderer;
-			int mx = game.Client.Input.MouseX;
-			int my = game.Client.Input.MouseY;
+			var r = game.Application.Renderer;
+			int mx = game.Application.Input.MouseX;
+			int my = game.Application.Input.MouseY;
 			int mapx = ((int)game.LevelMouseX)/32;
 			int mapy = ((int)game.LevelMouseY)/32;
 			int cursorx = mapx * 32 + 16;
@@ -360,7 +360,7 @@ namespace Client.UI
 		public void ShowNextWaveWarning(string msg, int seconds)
 		{
 			_nextWaveLine.Text = msg + " Arriving in " + seconds + "...";
-			_nextWaveLine.X = _game.Client.Renderer.Width/2-_nextWaveLine.Width/2;
+			_nextWaveLine.X = _game.Application.Renderer.Width/2-_nextWaveLine.Width/2;
 			_showNextWaveLine = seconds >= 0;
 		}
 
@@ -373,7 +373,7 @@ namespace Client.UI
 
 		public void Render()
 		{
-			var client = _game.Client;
+			var client = _game.Application;
 			var r = client.Renderer;
 
 			if(_showNextWaveLine)

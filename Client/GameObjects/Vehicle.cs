@@ -91,7 +91,7 @@ namespace Client.GameObjects
 		
 		public override void Render()
 		{
-			var r = _game.Client.Renderer;
+			var r = _game.Application.Renderer;
 			
 			if(_game.ShowVehicleProbes)
 				r.AddDrawable(_targetLine);

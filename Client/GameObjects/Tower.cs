@@ -50,7 +50,7 @@ namespace Client.GameObjects
 			Width = 32;
 			Height = 32;
 			Angle = 0;
-			_game.Client.Renderer.Backgrounds[1].SetTile((int)X / 32, (int)Y / 32, 5, 5);
+			_game.Application.Renderer.Backgrounds[1].SetTile((int)X / 32, (int)Y / 32, 5, 5);
 		}
 
 		protected override void Dispose(bool disposing)
@@ -59,7 +59,7 @@ namespace Client.GameObjects
 			{
 				if(disposing)
 				{
-					_game.Client.Renderer.Backgrounds[1].ClearTile((int)X / 32, (int)Y / 32);
+					_game.Application.Renderer.Backgrounds[1].ClearTile((int)X / 32, (int)Y / 32);
 				}
 			}
 			finally
@@ -123,10 +123,10 @@ namespace Client.GameObjects
 
 		public override void Render()
 		{
-			_game.Client.Renderer.Backgrounds[1].SetTile((int)X / 32, (int)Y / 32, 5, 5);
+			_game.Application.Renderer.Backgrounds[1].SetTile((int)X / 32, (int)Y / 32, 5, 5);
 			
 			// Draw base of tower
-//			_game.Client.Renderer.DrawSprite(_base, X, Y, 0, 0, Priority.TowerBase);
+//			_game.Application.Renderer.DrawSprite(_base, X, Y, 0, 0, Priority.TowerBase);
 		}
 	}
 }

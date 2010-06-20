@@ -9,7 +9,7 @@ namespace Client
 	using OpenTK;
 	using OpenTK.Graphics.OpenGL;
 	
-	public class G52client 
+	public class Application 
 	{
 	    public Audio.Player AudioPlayer { get; private set; }
 	    public Input Input { get; private set; }
@@ -21,8 +21,7 @@ namespace Client
 		{
 			try 
 			{
-			    G52client client = new G52client();
-				client.GetType();
+			    Application app = new Application();
 			}
 			catch(Exception ex) 
 			{
@@ -30,12 +29,12 @@ namespace Client
 			}
 	    }
 	
-	    public G52client() 
+	    public Application() 
 		{
 	        int sw = 1024;
 	        int sh = 768;
 	
-			this.AudioPlayer = new Client.Audio.Player();
+			this.AudioPlayer = new Audio.Player();
 			
 			this.Renderer = new Renderer(sw, sh);
 			

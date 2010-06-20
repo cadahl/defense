@@ -27,8 +27,8 @@ namespace Client
 
 		public void Update (Game game)
 		{
-			Background bg = game.Client.Renderer.Backgrounds[0];
-			Input input = game.Client.Input;
+			Background bg = game.Application.Renderer.Backgrounds[0];
+			Input input = game.Application.Input;
 			
 			// Lägg på acceleration om spelaren trycker i någon riktning, men bara upp till maximal hastighet.
 			if (input.isDown (Key.CameraLeft))	_xVelocity = Math.Max (_xVelocity - acceleration, -maxVelocity);
@@ -76,8 +76,8 @@ namespace Client
 			// Nu har vi en färdig position, så scrolla bakgrundslagret.
 			bg.HScroll = _x;
 			bg.VScroll = _y;
-			game.Client.Renderer.Backgrounds[1].HScroll = _x;
-			game.Client.Renderer.Backgrounds[1].VScroll = _y;
+			game.Application.Renderer.Backgrounds[1].HScroll = _x;
+			game.Application.Renderer.Backgrounds[1].VScroll = _y;
 		}
 
 /*		public void ScrollToObject (GameObject obj)

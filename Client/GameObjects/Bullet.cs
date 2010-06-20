@@ -70,7 +70,7 @@ namespace Client.GameObjects
 			_sprite[0].X = X;
 			_sprite[0].Y = Y;
 			_sprite[0].Angle = (ushort)Util.DeltasToAngle(_targetX-_sourceX, _targetY-_sourceY);
-			_game.Client.Renderer.AddDrawable(_sprite);
+			_game.Application.Renderer.AddDrawable(_sprite);
 		}
 	}
 }

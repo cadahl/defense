@@ -31,7 +31,7 @@ namespace Client.GameObjects
 				vi++;
 			}
 			
-			_game.Client.Renderer.AddDrawable(_sprite);
+			_game.Application.Renderer.AddDrawable(_sprite);
 		}
 
 	}

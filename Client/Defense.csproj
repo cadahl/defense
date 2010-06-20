@@ -32,7 +32,6 @@
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="G52client.cs" />
     <Compile Include="Game.cs" />
     <Compile Include="Input.cs" />
     <Compile Include="Camera.cs" />
@@ -84,6 +83,7 @@
     <Compile Include="Util\Timer.cs" />
     <Compile Include="Util\Util.cs" />
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Application.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="OpenTK, Version=1.0.0.201, Culture=neutral, PublicKeyToken=bad199fe84eb3df4">

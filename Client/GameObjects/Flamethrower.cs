@@ -59,7 +59,7 @@ namespace Client.GameObjects
 		{
 			base.Update(ticks);
 
-			if(Target != null && (_game.Client.Renderer.FrameCount % 5)==0)
+			if(Target != null && (_game.Application.Renderer.FrameCount % 5)==0)
 				SpawnFlame();
 			
 			UpdateFlames();			
@@ -107,13 +107,13 @@ namespace Client.GameObjects
 				_flame[i].Color.A = 0.0f;
 				
 			}
-			_game.Client.Renderer.AddDrawable(_flame);
+			_game.Application.Renderer.AddDrawable(_flame);
 
 			_weapon[0].X = X;
 			_weapon[0].Y = Y;
 			_weapon[0].Angle = (ushort)Angle;
 			_weapon[0].Frame = (byte)CurrentUpgrade.Id;
-			_game.Client.Renderer.AddDrawable(_weapon);
+			_game.Application.Renderer.AddDrawable(_weapon);
 		}
 		
 		private void UpdateFlames()

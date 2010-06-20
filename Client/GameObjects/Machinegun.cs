@@ -40,7 +40,7 @@ namespace Client.GameObjects
 			
 			float amount = _flashTimer.Progress;
    			_flashSprite[0].Color = new Color4(amount,amount,amount,0.0f);
-			_game.Client.Renderer.AddDrawable(_flashSprite);
+			_game.Application.Renderer.AddDrawable(_flashSprite);
 		}
 
 		void HandleFireTimerElapsed (Timer timer)
@@ -88,7 +88,7 @@ namespace Client.GameObjects
 			_gunSprite[0].Y = Y;
 			_gunSprite[0].Angle = (ushort)Angle;
 			_gunSprite[0].Frame = (byte)CurrentUpgrade.Id;
-			_game.Client.Renderer.AddDrawable(_gunSprite);
+			_game.Application.Renderer.AddDrawable(_gunSprite);
 		}
 	}
 }

@@ -66,7 +66,7 @@ namespace Client.GameObjects
 		
 		public override void Render()
 		{
-			Renderer r = _game.Client.Renderer;
+			Renderer r = _game.Application.Renderer;
 			_sprite[0].X = X;
 			_sprite[0].Y = Y;
 			_sprite[0].Frame = (byte)Math.Max(0,_frame);
