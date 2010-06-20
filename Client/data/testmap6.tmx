@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="40" height="24" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" source="bg2.tsx"/>
+ <tileset firstgid="257" source="spawns.tsx"/>
+ <layer name="Bg" width="40" height="24">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAA82WPQ7CMAxGDWIpdClMhS6FqcACW4EFbgA3KPc/BI4Uq1GUH6cFkuFJ/gqynOgpyRsAtn9kh1yRGumQmYcVkiFzZIHkWs4kB+SINMjekalW+9l6F8z5SmSNbJBKy6VErPmGtMjFkalW+9l6c+dz7UkjMa3flKk27ane2zffRM7n2pNWYlq/KVNt2lO9t2++Avz+UY7hH83n25NY/tXg949yDP9O4PePcgz/7pC2f5zzL6Z/nPNPzbR+7v/H+kfzcfwbk4f6x7l/v5FD/RP3xlTC9W9MDvVPfF9KQvwbmkP90+dLzT99vtT8E/eaeMt2kKZ/4l47Q/8+SM0/ca89lPlS82/I+29ottV5wHy/9M9WV8z5XtCf1f/mCf05YkL8/gFPxptcAA8AAA==
+  </data>
+ </layer>
+ <layer name="Spawns" width="40" height="24">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAA2NgoD9gZBwAS4kETIwIPJAAZD0TEDPjkB9o9wkCsRAQCw+sM3ACRSBWAmLlgXbIKKAqIJQvBhqg5wvWAXQLNoArXwy1cB1sYLS8GQWjYBSMguEJmAdxn2UUkA8AhP/NrQAPAAA=
+  </data>
+ </layer>
+</map>

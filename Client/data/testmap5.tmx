@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" width="40" height="24" tilewidth="32" tileheight="32">
+ <tileset firstgid="1" source="cew3x.tsx"/>
+ <tileset firstgid="257" source="spawns.tsx"/>
+ <layer name="Bg" width="40" height="24">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAA+2W0Q2CQAyGC7qAFxdQJkBdAHUB3UBW1g10ENtIw6V6HJeQXqM+fOGBwP8l3F/qAGBtgArZIXOBQzYG2A747Q1wQI4BP7oWxfu9KcHXQ4nMEp9xE+XHck5d1jnBcaHg57sRLby6sDTixxm+W6gLkpWCH2X4M4TcQl2Q1Ap+lOHPEHYb05dGwY8y5AxJ6YtGfz998wuM60sOvxr6cxnrSw6/BvpzGetLDj92DP3XuDtlRr8h/Jn59/s+P+42z6DcPhLuttwPrsjNgB93W/rdkYcBP0Zjv/oFP6vQjvMEtr2mDgAPAAA=
+  </data>
+ </layer>
+ <layer name="Spawns" width="40" height="24">
+  <data encoding="base64" compression="gzip">
+   H4sIAAAAAAAAA+3BAQ0AAADCoPdPbQ8HFAAAAPwbZzTZygAPAAA=
+  </data>
+ </layer>
+</map>
