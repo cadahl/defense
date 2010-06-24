@@ -167,7 +167,7 @@ namespace Util
 
 			return layer;
 		}
-
+		
 		private Tsx LoadTsx (string path, int firstgid)
 		{
 			Console.WriteLine ("MapLoader: Loading tileset " + path);
