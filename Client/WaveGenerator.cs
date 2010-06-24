@@ -3,6 +3,7 @@ namespace Client
 	using System;
 	using System.Collections;
 	using System.Collections.Generic;
+	using System.Drawing;
 	using System.Linq;
 	using Util;
 	using Client.GameObjects;
@@ -80,7 +81,7 @@ namespace Client
 				{
 					CurrentWave.Count--;
 
-					var es = _game.Map.Spawns.Where(s => s.Type == SpawnType.Enemy).First();
+					var es = _game.Map.EnemySpawns[0];
 					SpawnUnit(CurrentWave.Unit, es.BlockX*32+16, es.BlockY*32+16, _cumulativeDifficulty);
 
 					_nextSpawnTimer.Reset();
@@ -114,11 +115,14 @@ namespace Client
 					            {
 									X = x,
 									Y = y,
-									Template = new SpriteTemplate("units",
-					                                              (int)v.Attribute("sx"),
-					                                              (int)v.Attribute("sy"),
-					                                              (int)v.Attribute("sw"),
-					                                              (int)v.Attribute("sh")),
+									Template = new SpriteTemplate 
+									{
+										TilemapName = "units",
+					                    Rectangle = new Rectangle( (int)v.Attribute("sx"),
+					                                               (int)v.Attribute("sy"),
+					                                               (int)v.Attribute("sw"),
+					                                               (int)v.Attribute("sh"))
+									},
 									MaxSpeed = (float)v.Attribute("speed"),
 									HitPoints = (int)((int)v.Attribute("hp") * difficulty),
 									Reward = (int)v.Attribute("reward")

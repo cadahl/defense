@@ -103,7 +103,7 @@ namespace Client.Graphics
 
 			if(_material == null)
 			{
-				_material = new Material(r, "data/defaultvs.glsl", "data/defaultfs.glsl");
+				_material = r.GetMaterial("sprite");
 			}
 			
 			_material.Bind();
@@ -112,13 +112,12 @@ namespace Client.Graphics
 		public override void EndDraw(Renderer r, int vertexCount)
 		{
 			GL.DrawArrays(BeginMode.Quads, 0, vertexCount);
-			Material.Unbind();
 		}
 		
 		public override unsafe void Draw (Renderer r, Vertex* vertexData, ref int vertexCount)
 		{
 			Tilemap tilemap = r.Tilemaps[Template.TilemapName];
-			
+
 			foreach(Instance ins in _instances)
 			{
 				if((ins.Flags & SpriteFlags.Disable) != 0)
@@ -126,8 +125,8 @@ namespace Client.Graphics
 				
 				float x = ins.X;
 				float y = ins.Y;
-				float width = Template.Width;
-				float height = Template.Height;
+				float width = Template.Rectangle.Width;
+				float height = Template.Rectangle.Height;
 				
 				// If the object should be included in scrolling...
 				if ((_flags & Drawable.Flags.NoScroll) == 0) 
@@ -139,25 +138,25 @@ namespace Client.Graphics
 				}
 				
 				// Calculate texcoords, with possible animation.
-				int tx = Template.X;
-				int ty = Template.Y;
+				int tx = Template.Rectangle.X;
+				int ty = Template.Rectangle.Y;
 				
-				// Animations can go either horizontally or vertically in the
-				// tilemap. Advance whichever coordinate to the proper frame.
-				if ((Template.Flags & SpriteTemplate.ANIM_VERTICAL) != 0) 
+				int frameOffset = (Template.FrameOffset > 0 ? Template.FrameOffset : Template.Rectangle.Width);
+
+				if(Template.VerticalAnimation)
 				{
-					ty += ins.Frame * Template.AnimationOffset;
-				} 
-				else 
+					ty += ins.Frame * frameOffset;
+				}
+				else
 				{
-					tx += ins.Frame * Template.AnimationOffset;
+					tx += ins.Frame * frameOffset;
 					
 					// If the animation would take us outside the right edge of the
 					// texture, start on the next row.
 					while (tx + width > tilemap.Width) 
 					{
-						tx -= (tilemap.Width / Template.AnimationOffset) * Template.AnimationOffset;
-						ty += Template.Height;
+						tx -= (tilemap.Width / frameOffset) * frameOffset;
+						ty += Template.Rectangle.Height;
 					}
 				}
 				
@@ -187,10 +186,12 @@ namespace Client.Graphics
 				Matrix4 rotm = Matrix4.Rotate(Quaternion.FromAxisAngle(Vector3.UnitZ, ins.Angle * (2.0f * (float)Math.PI) / 4096.0f));
 				Matrix4.Mult(ref scalem, ref m, out m);
 				Matrix4.Mult(ref rotm, ref m, out m);
-				Vector4 v00 = new Vector4(-Template.OffsetX, -Template.OffsetY, 0.0f, 1.0f);
-				Vector4 v10 = new Vector4(width-Template.OffsetX, -Template.OffsetY, 0.0f, 1.0f);
-				Vector4 v11 = new Vector4(width-Template.OffsetX, height-Template.OffsetY, 0.0f, 1.0f);
-				Vector4 v01 = new Vector4(-Template.OffsetX, height-Template.OffsetY, 0.0f, 1.0f);
+				float ox = Template.Centered ? Template.Rectangle.Width/2 : Template.Offset.X;
+				float oy = Template.Centered ? Template.Rectangle.Height/2 : Template.Offset.Y;
+				Vector4 v00 = new Vector4(-ox, -oy, 0.0f, 1.0f);
+				Vector4 v10 = new Vector4(width-ox, -oy, 0.0f, 1.0f);
+				Vector4 v11 = new Vector4(width-ox, height-oy, 0.0f, 1.0f);
+				Vector4 v01 = new Vector4(-ox, height-oy, 0.0f, 1.0f);
 	
 				Vector4.Transform(ref v00, ref m, out v00);
 				Vector4.Transform(ref v10, ref m, out v10);

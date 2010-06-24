@@ -4,7 +4,7 @@ namespace Client
 	using System.Collections.Generic;
 	using Client.GameObjects;
 	
-	public delegate void CollisionHandler(Collider c, List<ObjectAndDistance<GameObject>> objects);
+	public delegate void CollisionHandler(Collider c, IEnumerable<ObjectAndDistance> objects);
 	
 	public enum ColliderType
 	{

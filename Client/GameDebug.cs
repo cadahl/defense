@@ -1,13 +1,13 @@
 namespace Client
 {
 	using System;
+	using System.Drawing;
 	using Client.Graphics;
 	using Util;
 
 	public partial class Game
 	{
-		private static Sprite _navDebugSprite = new Sprite(new SpriteTemplate("units", 0, 256, 32, 32, 0, 0, 0), 0, 2);
-		
+		private static Sprite _navDebugSprite = new Sprite(new SpriteTemplate() { TilemapName = "units", Rectangle = new Rectangle(0, 256, 32, 32), Centered = false }, 0, 2);
 		private void RenderNavigationMap(Renderer r)
 		{
 			_navDebugSprite.Resize(Map.Width * Map.Height);

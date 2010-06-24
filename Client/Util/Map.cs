@@ -15,11 +15,6 @@ namespace Util
 		Solid = 3
 	}
 
-	public static class BlockTypeExtensions
-	{
-
-	}
-
 	public struct MapBlock
 	{
 		public ushort TileIndex;
@@ -64,7 +59,7 @@ namespace Util
 
 	}
 
-	public class Map
+	public partial class Map
 	{
 		public int Width { get; private set; }
 		public int Height { get; private set; }
@@ -72,13 +67,7 @@ namespace Util
 		public List<string> TilemapNames { get; private set; }
 		public List<MapSpawn> Spawns { get; private set; }
 
-		public Map (int width, int height)
-		{
-			Width = width;
-			Height = height;
-			Blocks = new List<MapBlock>();//Enumerable.Repeat(MapBlock.Empty, Width*Height));
-			TilemapNames = new List<string>();
-			Spawns = new List<MapSpawn>();
-		}
+		public MapSpawn Base { get; private set; }
+		public List<MapSpawn> EnemySpawns { get; private set; }
 	}
 }

@@ -2,6 +2,7 @@ namespace Client.Graphics
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Linq;
 	using OpenTK;
 	using OpenTK.Graphics.OpenGL;
 	using Client;
@@ -10,8 +11,8 @@ namespace Client.Graphics
 	{
 		public Dictionary<string, Tilemap> Tilemaps { get; private set; }
 		public Dictionary<int, Background> Backgrounds { get; private set; }
+		public Dictionary<string, Material> Materials { get; private set; }
 		public GameWindow Window { get; private set; }
-
 		public Dictionary<int,int> ShaderCache { get; private set; }
 		
 		public int FrameCount { get; private set; }
@@ -41,17 +42,21 @@ namespace Client.Graphics
 		private RenderToTexture _rtt;		
 		private Material _compositingMaterial;
 
-		public Renderer (int sw, int sh)
+		public Renderer()
 		{
-			Window = new GameWindow(sw,sh,OpenTK.Graphics.GraphicsMode.Default,"Client",GameWindowFlags.Default,DisplayDevice.Default, 2, 0, OpenTK.Graphics.GraphicsContextFlags.Default);
+	        int sw = 1024;
+	        int sh = 768;
+
+			Window = new GameWindow(sw,sh,OpenTK.Graphics.GraphicsMode.Default,"Client",GameWindowFlags.Default,DisplayDevice.Default, 2, 1, OpenTK.Graphics.GraphicsContextFlags.Default);
+
 			//Window.VSync = VSyncMode.On;
-			
 			Window.UpdateFrame += HandleWindowUpdateFrame;
 			Window.RenderFrame += HandleWindowRenderFrame;
-			
+
 			Tilemaps = new Dictionary<string, Tilemap> ();
 			Backgrounds = new Dictionary<int, Background> ();
 			ShaderCache = new Dictionary<int, int>();
+			Materials = new Dictionary<string, Material>();
 			_drawList = new List<Drawable> ();
 
 			_vb = new VertexBuffer();
@@ -71,9 +76,43 @@ namespace Client.Graphics
 			GL.Disable(EnableCap.AlphaTest);
 			
 			_rtt = new RenderToTexture(Width, Height);
-			_compositingMaterial = new Material(this, "data/distortvs.glsl", "data/distortfs.glsl");
+			_compositingMaterial = GetMaterial("distort");
 			
 			ZoomLevel = 1.0f;
+
+			Window.Resize += (sender, e) => 
+			{
+				GL.Viewport (0, 0, Window.ClientSize.Width, Window.ClientSize.Height);
+				GL.MatrixMode (MatrixMode.Projection);
+				GL.LoadIdentity ();
+				GL.Ortho (0, Window.ClientSize.Width*ZoomLevel, Window.ClientSize.Height*ZoomLevel, 0, -100.0, 100.0);
+			};
+			
+			
+			Window.Unload += (sender, e) =>
+			{
+				var textures = (from t in Tilemaps.Values select t.Texture).ToArray();
+				GL.DeleteTextures(textures.Length, textures);
+				
+				foreach(var m in Materials.Values)
+					m.Dispose();
+				
+				_rtt.Dispose();
+				_compositingMaterial.Dispose();
+			};
+			
+		}
+		
+		public Material GetMaterial(string name)
+		{
+			Material m = null;
+			if(!Materials.TryGetValue(name, out m))
+			{
+				m = new Material(this, "data/"+name+"vs.glsl", "data/"+name+"fs.glsl");
+				Materials[name] = m;
+			}
+			
+			return m;
 		}
 		
 		public void AddDrawable(Drawable d)
@@ -162,12 +201,6 @@ namespace Client.Graphics
 		
 		private void HandleWindowRenderFrame (object sender, FrameEventArgs e)
 		{
-			GL.Viewport (0, 0, Window.ClientSize.Width, Window.ClientSize.Height);
-			
-			GL.MatrixMode (MatrixMode.Projection);
-			GL.LoadIdentity ();
-			GL.Ortho (0, Window.ClientSize.Width*ZoomLevel, Window.ClientSize.Height*ZoomLevel, 0, -100.0, 100.0);
-			
 			GL.MatrixMode (MatrixMode.Modelview);
 			GL.LoadIdentity ();
 
@@ -205,9 +238,7 @@ namespace Client.Graphics
 		
 		public void Run()
 		{
-		
 			Window.VSync = VSyncMode.Off;
-			
 			Window.Run(60.0,60.0);
 		}
 	}

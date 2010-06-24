@@ -48,7 +48,7 @@ namespace Client.Graphics
 			
 			if(_material == null)
 			{
-				_material = new Material(r, "data/defaultvs.glsl", "data/defaultfs.glsl");
+				_material = r.GetMaterial("default");
 				
 				_psx = tilemap.PixelStepX;
 				_psy = tilemap.PixelStepY;
@@ -73,7 +73,7 @@ namespace Client.Graphics
 		public override void EndDraw (Renderer r, int vertexCount)
 		{
 			GL.DrawArrays(BeginMode.Quads, 0, vertexCount);
-			Material.Unbind();
+//			Material.Unbind();
 		}
 		
 		private void SetQuad(int qi, int x0, int y0, int x1, int y1, int u0, int v0, int u1, int v1)

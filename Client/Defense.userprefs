@@ -1,0 +1,52 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Release|x86" ctype="Workspace" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Graphics/Renderer.cs" ctype="Workbench">
+    <Files>
+      <File FileName="Application.cs" Line="46" Column="1" />
+      <File FileName="Game.cs" Line="158" Column="1" />
+      <File FileName="Camera.cs" Line="103" Column="66" />
+      <File FileName="GameObjects/Explosion.cs" Line="26" Column="12" />
+      <File FileName="GameObjects/Tower.cs" Line="90" Column="54" />
+      <File FileName="GameObjects/Cannon.cs" Line="89" Column="21" />
+      <File FileName="GameObjects/Bullet.cs" Line="68" Column="5" />
+      <File FileName="GameObjects/Flamethrower.cs" Line="35" Column="27" />
+      <File FileName="GameObjects/Vehicle.cs" Line="404" Column="1" />
+      <File FileName="GameObjects/Generic.cs" Line="14" Column="1" />
+      <File FileName="GameObjects/Wall.cs" Line="11" Column="1" />
+      <File FileName="GameObjects/VehicleHealthBars.cs" Line="29" Column="1" />
+      <File FileName="GameObjects/Machinegun.cs" Line="91" Column="21" />
+      <File FileName="UI/Hud.cs" Line="142" Column="21" />
+      <File FileName="Graphics/Widget.cs" Line="81" Column="6" />
+      <File FileName="GameObjects/ObjectDatabase.cs" Line="212" Column="50" />
+      <File FileName="GameObjects/Priority.cs" Line="1" Column="1" />
+      <File FileName="GameObjects/GameObject.cs" Line="49" Column="1" />
+      <File FileName="GameObjects/Buildable.cs" Line="21" Column="36" />
+      <File FileName="GameObjects/InstantBullet.cs" Line="52" Column="38" />
+      <File FileName="Collider.cs" Line="12" Column="3" />
+      <File FileName="Util/Map.cs" Line="70" Column="1" />
+      <File FileName="Util/MapLoader.cs" Line="196" Column="19" />
+      <File FileName="WaveGenerator.cs" Line="83" Column="1" />
+      <File FileName="Util/Navigation.cs" Line="242" Column="4" />
+      <File FileName="Graphics/Renderer.cs" Line="92" Column="32" />
+      <File FileName="Graphics/Material.cs" Line="32" Column="4" />
+      <File FileName="Graphics/Background.cs" Line="117" Column="5" />
+      <File FileName="Graphics/Sprite.cs" Line="96" Column="1" />
+      <File FileName="Graphics/Text.cs" Line="210" Column="4" />
+      <File FileName="Graphics/Circle.cs" Line="62" Column="4" />
+      <File FileName="Graphics/Panel.cs" Line="77" Column="4" />
+      <File FileName="Graphics/Line.cs" Line="28" Column="25" />
+      <File FileName="Graphics/Tilemap.cs" Line="30" Column="31" />
+      <File FileName="data/defaultfs.glsl" Line="1" Column="32" />
+      <File FileName="data/linefs.glsl" Line="1" Column="1" />
+      <File FileName="data/linevs.glsl" Line="6" Column="1" />
+      <File FileName="data/game.xml" Line="1" Column="39" />
+      <File FileName="Sharpmunktest/Main.cs" Line="7" Column="3" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore>
+      <Catchpoint exceptionName="System.NullReferenceException" />
+    </BreakpointStore>
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches ctype="PinnedWatchStore" />
+</Properties>

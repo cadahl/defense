@@ -30,7 +30,7 @@ namespace Client.Graphics
 	        _blocks = m.Blocks;
 	        _tilemapNames = m.TilemapNames;
 			
-			_material = new Material(r, "data/defaultvs.glsl", "data/defaultfs.glsl");
+			_material = r.GetMaterial("default");
 	    }
 	
 	    public Background(Renderer r, string tilemapName, int width, int height) 
@@ -45,7 +45,7 @@ namespace Client.Graphics
 	        _tilemapNames = new List<string>();
 			_tilemapNames.Add(tilemapName);
 			
-			_material = new Material(r, "data/defaultvs.glsl", "data/defaultfs.glsl");
+			_material = r.GetMaterial("default");
 	    }
 
 		public void ClearTile(int x, int y)
@@ -114,7 +114,7 @@ namespace Client.Graphics
 				
 	        DrawTiles();
 			
-			Material.Unbind();
+		//	Material.Unbind();
 	    }
 	    
 	    private void DrawTiles() 

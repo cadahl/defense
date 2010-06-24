@@ -1,9 +1,8 @@
-
-using System;
-
 namespace Client.Graphics
 {
+	using System;
 	using System.Collections.Generic;
+	using System.Drawing;
 	using OpenTK;
 	using OpenTK.Graphics;
 	using OpenTK.Graphics.OpenGL;
@@ -23,7 +22,7 @@ namespace Client.Graphics
 		public static TextFont NormalFont;
 		public static TextFont CashFont;
 		public TextFont Font;
-		private static Material _material;
+		private Material _material;
 		private string _text;
 		private int[] _indices;
 		private int[] _xs;
@@ -33,7 +32,12 @@ namespace Client.Graphics
 			if(CashFont == null)
 			{
 				CashFont = new TextFont();
-				CashFont.Template = new SpriteTemplate ("units", 240, 384, 16, 21, 0, 0, 16, 0);
+				CashFont.Template = new SpriteTemplate
+				{ 
+					TilemapName = "units", 
+					Rectangle = new Rectangle(240, 384, 16, 21), 
+					Centered = false
+				};
 				
 				byte i = 0;
 				CashFont.Table = new Dictionary<char, byte[]>()
@@ -55,7 +59,12 @@ namespace Client.Graphics
 			if(NormalFont == null)
 			{
 				NormalFont = new TextFont();
-				NormalFont.Template = new SpriteTemplate ("units", 0, 464, 16, 16, 0, 0, 16, 0);
+				NormalFont.Template = new SpriteTemplate 
+				{
+					TilemapName = "units", 
+					Rectangle = new Rectangle(0, 464, 16, 16),
+					Centered = false
+				};
 
 				byte i = 0;
 				NormalFont.Table = new Dictionary<char, byte[]>()
@@ -155,8 +164,7 @@ namespace Client.Graphics
 			Y = y;
 			Font = NormalFont;
 			
-			if(_material == null)
-				_material = new Material(r, "data/defaultvs.glsl", "data/defaultfs.glsl");
+			_material = r.GetMaterial("default");
 		}
 		
 		public string Text
@@ -220,23 +228,27 @@ namespace Client.Graphics
 			if(_text != null)
 			for(int i = 0; i < _text.Length; ++i)
 			{
-				float x = X + _xs[i] - tmp.OffsetX;
-				float y = Y - tmp.OffsetY;
-				float width = tmp.Width;
-				float height = tmp.Height;
+				float x = X + _xs[i] - tmp.Offset.X;
+				float y = Y - tmp.Offset.Y;
+				float width = tmp.Rectangle.Width;
+				float height = tmp.Rectangle.Height;
 				
 				// Calculate texcoords, with possible animation.
-				int tx = tmp.X;
-				int ty = tmp.Y;
+				int tx = tmp.Rectangle.X;
+				int ty = tmp.Rectangle.Y;
 				
-				tx += _indices[i] * Font.Template.AnimationOffset;
+				int frameOffset = Font.Template.FrameOffset;
+				if(frameOffset == 0)
+					frameOffset = Font.Template.Rectangle.Width;
+				
+				tx += _indices[i] * frameOffset;
 				
 				// If the animation would take us outside the right edge of the
 				// texture, start on the next row.
 				while (tx + width > tilemap.Width) 
 				{
-					tx -= (tilemap.Width / Font.Template.AnimationOffset) * Font.Template.AnimationOffset;
-					ty += Font.Template.Height;
+					tx -= (tilemap.Width / frameOffset) * frameOffset;
+					ty += Font.Template.Rectangle.Height;
 				}
 
 				float s0 = tx * tilemap.PixelStepX;
@@ -285,7 +297,7 @@ namespace Client.Graphics
 		public override void EndDraw (Renderer r, int vertexCount)
 		{
 			GL.DrawArrays(BeginMode.Quads, 0, vertexCount);
-			Material.Unbind();
+		//	Material.Unbind();
 		}
 	}
 }

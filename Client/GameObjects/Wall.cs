@@ -6,12 +6,16 @@ namespace Client.GameObjects
 
 	public class Wall : Buildable
 	{
+		public override float Radius {
+			get {
+				return 16.0f;
+			}
+		}
+		
 		public Wall (Game game, float x, float y) : base(game)
 		{
 			X = x;
 			Y = y;
-			Width = 32;
-			Height = 32;
 			Angle = 0;
 		}
 

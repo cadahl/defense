@@ -98,7 +98,7 @@ namespace Client.UI
 			_toolbarPanel.Color = PanelColor;
 			_toolbarPanel.Corners = 0;
 
-			_baseIcon = new Sprite(new SpriteTemplate("units", 128, 192-32, 32, 32, 0), Drawable.Flags.NoScroll|Drawable.Flags.Colorize, _basePriority+1);
+			_baseIcon = new Sprite(_game.GetWidgetTemplate("baseicon"), Drawable.Flags.NoScroll|Drawable.Flags.Colorize, _basePriority+1);
 			_baseIcon.Resize((int)ToolbarEntries.Count);
 
 			_cashText = new TextLine(r,0,0,basePriority+1);

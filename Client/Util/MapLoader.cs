@@ -8,224 +8,148 @@ namespace Util
 	using System.Xml;
 	using System.Xml.Linq;
 
-	public class MapLoader
+	public partial class Map
 	{
-		private List<int[]> _layers = new List<int[]> ();
-		private List<int> _flattened;
-		private List<Tsx> _tsxs = new List<Tsx> ();
-		private Map _outMap;
-
-		public class Tsx
+		private class Tsx
 		{
-			public string _name;
-			public string _image;
-			public int _firstgid;
-			public bool _include;
-			public Dictionary<int, SpawnType> _spawnTypes = new Dictionary<int, SpawnType> ();
-			public BlockType[] _blk = new BlockType[256];
+			public bool SpawnsOnly;
+			public string TilemapName;
+			public int FirstGid;
+			public int LastGid;
+			public Dictionary<int, SpawnType> SpawnTypes;
+			public Dictionary<int,BlockType> BlockTypes;
 		}
 
-		public Map Map
-		{
-			get
-			{
-				return _outMap;
-			}
-		}
-
-		public MapLoader(string path)
+		public Map(string path)
 		{
 			Console.WriteLine ("MapLoader: Loading level " + path);
 
 			var d = XElement.Load(path);
 
-			_outMap = new Map ((int)d.Attribute("width"), (int)d.Attribute("height"));
+			Width = (int)d.Attribute("width");
+			Height = (int)d.Attribute("height");
+			
+			
+			Spawns = new List<MapSpawn>();
 			
 			// Load Tsx'es
-			_tsxs = (from ts in d.Elements("tileset")
-			                select LoadTsx(Path.Combine(Path.GetDirectoryName(path),(string)ts.Attribute("source")),
-			                                (int)ts.Attribute("firstgid")-1)).ToList();
-
-
-			// Load and store layers.
-			_layers = (from l in d.Elements("layer")
-			           select LoadTmxLayer(l)).ToList();
-
-			// Handle spawns (will be replaced with _emptyGlobalTid)
-			LoadAndRemoveSpawns ();
+			string dir = Path.GetDirectoryName(path);
+			var tsxs = 	d.Elements("tileset")
+						.Select( ts => LoadTsx( Path.Combine( dir, (string)ts.Attribute("source") ), (int)ts.Attribute("firstgid")-1) )
+						.ToList();
 			
-			// Flatten layers
-			FlattenLayers ();
+			// Calculate lastGid for each tileset.
+			for(int ti = 0; ti < tsxs.Count-1; ++ti)
+			{
+				tsxs[ti].LastGid = tsxs[ti+1].FirstGid-1;
+			}
 			
-			// Remove unused tilesets
-			RemoveUnusedTilesetsAndZeroBase ();
+
+			// Load layers.
+			var layers = (from l in d.Elements("layer")
+			    	       select LoadTmxLayer(l)).ToList();			
+
+			LoadAndRemoveSpawns (layers, tsxs);
 			
+			RemoveUnusedTilesetsAndZeroBase (FlattenLayers (layers), tsxs);
+		}
+
+		private List<int> FlattenLayers(List<List<int>> layers)
+		{
+			if(layers == null || layers.Count == 0)
+				throw new Exception("FlattenLayers: No layers!");
+			
+			var flattened = new List<int>(layers[0]);
+			
+			for(int li = 1; li < layers.Count; ++li)
+			{
+				for (int bi = 0; bi < Width * Height; ++bi)
+				{
+					flattened[bi] = layers[li][bi] != 0 ? layers[li][bi] : flattened[bi];
+				}
+			}
+			
+			return flattened;
+		}
+
+		private void RemoveUnusedTilesetsAndZeroBase(List<int> flattened, List<Tsx> tsxs)
+		{
+			Blocks = new List<MapBlock>();
+
+			var emptyBlock = new MapBlock(BlockType.Empty, 0);
+			
+			Blocks = (	from gid in flattened
+						let tsx = tsxs.Find(t => t.SpawnsOnly && gid >= t.FirstGid && gid <= t.LastGid)
+						let localId = (int)Math.Max (0, ((int)gid - tsx.FirstGid - 1))
+						select gid == 0 ? emptyBlock : new MapBlock(tsx.BlockTypes[localId + 1], (ushort)localId)
+			          ).ToList();
+
 			// Output tileset paths
-			foreach (Tsx tsx in _tsxs) 
-			{
-				if (tsx._include)
-				{
-					_outMap.TilemapNames.Add(tsx._image);
-				}
-			}
+			TilemapNames = (from tsx in tsxs where tsx.SpawnsOnly select tsx.TilemapName).ToList();
 		}
 
-		private void FlattenLayers()
+		private void LoadAndRemoveSpawns (List<List<int>> layers, List<Tsx> tsxs)
 		{
-			_flattened = new List<int>(_layers[0]);
-
-			for (int li = 1; li < _layers.Count; li++)
+			foreach(var layer in layers) 
 			{
-				for (int bi = 0; bi < _outMap.Width * _outMap.Height; ++bi)
+				for (int i = 0; i < Width * Height; i++) 
 				{
-					_flattened[bi] = _layers[li][bi] != 0 ? _layers[li][bi] : _flattened[bi];
-				}
-			}
-
-			_layers = null;
-		}
-
-		private void RemoveUnusedTilesetsAndZeroBase()
-		{
-			List<Tsx> optlist = new List<Tsx> ();
-			foreach (Tsx tsx in _tsxs) 
-			{
-				if(tsx._include)
-				{
-					optlist.Add(tsx);
-				}
-			}
-			
-			// Replace the old Tsx list
-			_tsxs = optlist;
-
-			foreach(int gid in _flattened)
-			{
-				Tsx tsx = null;
-				int flatIndex = int.MaxValue;
-
-				if (gid > 0)
-				{
-					int lastValidTsi = -1;
-					for (int tsi = 0; tsi < _tsxs.Count; ++tsi)
+					int tx = i % Width;
+					int ty = i / Width;
+					int gid = layer[i];
+					
+					var tsx = tsxs.Find(t => !t.SpawnsOnly && gid >= t.FirstGid && gid <= t.LastGid);
+					if (tsx != null)
 					{
-						if (gid >= _tsxs[tsi]._firstgid)
+						SpawnType spawnType = SpawnType.Nothing;
+						if (tsx.SpawnTypes.TryGetValue(gid - tsx.FirstGid, out spawnType)) 
 						{
-							lastValidTsi = tsi;
-						}
-					}
-
-					tsx = _tsxs[lastValidTsi];
-					flatIndex = (int)Math.Max (0, ((int)gid - tsx._firstgid - 1));
-				}
-
-				_outMap.Blocks.Add(new MapBlock(flatIndex != int.MaxValue ? tsx._blk[flatIndex + 1] : BlockType.Empty,
-				                                (ushort)flatIndex));
-			}
-		}
-
-		private void LoadAndRemoveSpawns ()
-		{
-			bool foundBase = false;
-			bool foundEnemy = false;
-			for (int li = 0; li < _layers.Count; ++li) 
-			{
-				for (int i = 0; i < _outMap.Width * _outMap.Height; i++) 
-				{
-					int tx = i % _outMap.Width;
-					int ty = i / _outMap.Width;
-					int gid = _layers[li][i];
-					
-					int tsIndex = -1;
-					for (int tsi = 0; tsi < _tsxs.Count; ++tsi) 
-					{
-						if (gid >= _tsxs[tsi]._firstgid) 
-						{
-							tsIndex = tsi;
-						}
-					}
-					
-					if (tsIndex < 0 || tsIndex >= _tsxs.Count)
-					{
-						Console.WriteLine ("MapLoader: Bad tsx index found for gid " + gid + " at " + tx + ", " + ty + ", index " + tsIndex);
-					}
-					
-					int localTileId = gid - _tsxs[tsIndex]._firstgid;
-					
-					// Does the Tsx say this tile contains an object instance/generator?
-					
-					Dictionary<int, SpawnType> objSpawns = _tsxs[tsIndex]._spawnTypes;
-					
-					SpawnType spawnType = SpawnType.Nothing;
-					if (!objSpawns.ContainsKey(localTileId)) 
-					{
-						if (!_tsxs[tsIndex]._include) 
-						{
-							_layers[li][i] = 0;
+							Spawns.Add(new MapSpawn (tx, ty, spawnType));
 						}
 						
-						continue;
-					} 
-					else 
-					{
-						spawnType = objSpawns[localTileId];
-					}
-					
-					if (spawnType != SpawnType.Nothing) 
-					{
-						if (spawnType == SpawnType.Base) 
-						{
-							foundBase = true;
-						}
-						else if (spawnType == SpawnType.Enemy) 
-						{
-							foundEnemy = true;
-						}
-						
-						_layers[li][i] = 0;
-						
-//                    Console.WriteLine("Spawn " + spawnType + " at " + tx + "," + ty);
-						_outMap.Spawns.Add(new MapSpawn (tx, ty, spawnType));
+						layer[i] = 0;
 					}
 				}
 			}
 			
-			if (!foundBase) 
+			Base = Spawns.Find(s => s.Type == SpawnType.Base);
+			if (Base == null) 
 			{
 				throw new Exception ("No base found.");
 			}
-			if (!foundEnemy) 
+
+			EnemySpawns = Spawns.FindAll(s => s.Type == SpawnType.Enemy);
+				
+			if (EnemySpawns == null || EnemySpawns.Count == 0) 
 			{
 				throw new Exception ("No enemy spawn point found.");
 			}
 		}
 
-		private int[] LoadTmxLayer (XElement el)
+		private List<int> LoadTmxLayer (XElement el)
 		{
-			if((int)el.Attribute("width") != _outMap.Width)
+			if((int)el.Attribute("width") != Width)
 			{
 				throw new Exception("Map layer isn't same width as map!");
 			}
 			
 			XElement map = el.Elements("data").Where(d => (string)d.Attribute("encoding")=="base64" && (string)d.Attribute("compression")=="gzip").SingleOrDefault();
-			
 			if (map == null)
 			{
 				throw new Exception ("Can't find map data.");
 			}
 
 			byte[] bytes = Util.DecodeBase64(map.Value.Trim());
-				
 			if (bytes == null)
 			{
 				throw new Exception ("Decoded layer data is null.");
 			}
 
-			// The data can be gzip compressed.
+			// The data is gzip compressed.
 			using(MemoryStream ms = new MemoryStream(bytes))
 			using(GZipStream gzs = new GZipStream(ms,CompressionMode.Decompress))
 			{
-				byte[] unbytes = new byte[_outMap.Width * _outMap.Height * 4];
+				byte[] unbytes = new byte[Width * Height * 4];
 				int actuallyread = gzs.Read(unbytes, 0, (int)unbytes.Length);
 
 				if(actuallyread != unbytes.Length)
@@ -235,10 +159,10 @@ namespace Util
 				bytes = unbytes;
 			}
 
-			int[] layer = new int[_outMap.Width * _outMap.Height];
-			for (int i = 0; i < _outMap.Width*_outMap.Height*4; ++i)
+			var layer = new List<int>();
+			for (int i = 0; i < Width*Height; ++i)
 			{
-				layer[i/4] |= bytes[i] << (8 * (i & 3));
+				layer.Add(BitConverter.ToInt32(bytes, i*4));
 			}
 
 			return layer;
@@ -249,40 +173,35 @@ namespace Util
 			Console.WriteLine ("MapLoader: Loading tileset " + path);
 			var d = XElement.Load(path);
 
-			Tsx tsx = new Tsx();
-			tsx._name = path;
-			tsx._include = path.Trim().Length > 0 && !path.Contains("spawns");
-			tsx._firstgid = firstgid;
-			tsx._image = Path.GetFileNameWithoutExtension((string)d.Element("image").Attribute("source"));
-
-			var btdefs =	from t in d.Elements("tile")
-							from p in t.Element("properties").Elements("property")
-							where (string)p.Attribute("name") == "blocktype"
-							select new
-							{
-								Id = (int)t.Attribute("id") + 1,
-								Type = (BlockType)Enum.Parse(typeof(BlockType), (string)p.Attribute("value"), true)
-							};
-
-			foreach(var btdef in btdefs)
+			Tsx tsx = new Tsx()
 			{
-				tsx._blk[btdef.Id] = btdef.Type;
-			}
+				SpawnsOnly = path.Trim().Length > 0 && !path.Contains("spawns"),
+				FirstGid = firstgid,
+				LastGid = int.MaxValue,
+				TilemapName = Path.GetFileNameWithoutExtension((string)d.Element("image").Attribute("source")),
+	
+				BlockTypes = (	from t in d.Elements("tile")
+								from p in t.Element("properties").Elements("property")
+								where (string)p.Attribute("name") == "blocktype"
+								select new
+								{
+									Id = (int)t.Attribute("id") + 1,
+									Type = (BlockType)Enum.Parse(typeof(BlockType), (string)p.Attribute("value"), true)
+								})
+								.ToDictionary(bt => bt.Id, bt => bt.Type),
 
-			var stdefs =	from t in d.Elements("tile")
-							from p in t.Element("properties").Elements("property")
-							where (string)p.Attribute("name") == "spawn"
-							select new
-							{
-								Id = (int)t.Attribute("id") + 1,
-								Type = (SpawnType)Enum.Parse(typeof(SpawnType), (string)p.Attribute("value"), true)
-							};
-
-			foreach(var stdef in stdefs)
-			{
-				tsx._spawnTypes[stdef.Id] = stdef.Type;
-			}
-
+				SpawnTypes = (	from t in d.Elements("tile")
+								from p in t.Element("properties").Elements("property")
+								where (string)p.Attribute("name") == "spawn"
+								select new
+								{
+									Id = (int)t.Attribute("id") + 1,
+									Type = (SpawnType)Enum.Parse(typeof(SpawnType), (string)p.Attribute("value"), true)
+								})
+								.Where(st => st.Type != SpawnType.Nothing)
+								.ToDictionary(st => st.Id, st => st.Type)
+			};
+			
 			return tsx;
 		}
 	}

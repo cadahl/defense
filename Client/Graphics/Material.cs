@@ -3,6 +3,7 @@ using System;
 
 namespace Client.Graphics
 {
+	using System.Collections.Generic;
 	using System.IO;
 	using OpenTK;
 	using OpenTK.Graphics.OpenGL;
@@ -36,11 +37,6 @@ namespace Client.Graphics
 		public void Bind()
 		{
 			GL.UseProgram(_program);
-		}
-
-		public static void Unbind()
-		{
-			GL.UseProgram(0);
 		}
 		
 		public void Uniform1(string name, float f)

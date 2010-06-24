@@ -14,7 +14,7 @@ namespace Client.Graphics
 		public float Radius;
 		public Color4 Color = Color4.White;
 		
-		private static Material _material;
+		private Material _material;
 		private uint _priorityUid;
 		private float _thickness = 0.0f;
 		private float _aawidth = (float)Math.Sqrt(2.0f);
@@ -29,10 +29,7 @@ namespace Client.Graphics
 		
 		public override void BeginDraw (Renderer r)
 		{
-			if(_material == null)
-			{
-				_material = new Material(r, "data/circlevs.glsl", "data/circlefs.glsl");
-			}
+			_material = r.GetMaterial("circle");
 
 			GL.Enable(EnableCap.Blend);
 			GL.Disable(EnableCap.Texture2D);
@@ -62,7 +59,7 @@ namespace Client.Graphics
 		public override void EndDraw (Renderer r, int vertexCount)
 		{
 			GL.DrawArrays(BeginMode.Quads, 0, vertexCount);
-			Material.Unbind();
+	//		Material.Unbind();
 		}
 		
 		public override unsafe void Draw (Renderer r, Vertex* vertexData, ref int vertexCount)

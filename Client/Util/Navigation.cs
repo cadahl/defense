@@ -3,6 +3,7 @@ namespace Util
 	using System;
 	using System.Collections.Generic;
 	using System.Drawing;
+	using System.Linq;
 	using OpenTK;
 
 
@@ -172,11 +173,7 @@ namespace Util
 		public bool Rebuild(List<Point> blockers)
 		{
 			NavNode[] newGrid = new NavNode[_map.Width * _map.Height]; 
-			PriorityQueueB<int> open = new PriorityQueueB<int>(	
-				delegate (int a, int b) 
-				{  
-					return newGrid[a]._cost.CompareTo(newGrid[b]._cost);
-				});
+			PriorityQueueB<int> open = new PriorityQueueB<int>( (a,b) => newGrid[a]._cost.CompareTo(newGrid[b]._cost) );
 			open.Push(_targetX + _targetY * _map.Width);
 			
 			for(int i = 0; i < newGrid.Length; ++i)
@@ -234,16 +231,9 @@ namespace Util
 			}
 
 			// Verify that all enemy spawn points can reach the target.
-
-			foreach(MapSpawn sp in _map.Spawns)
+			if( 0 != _map.EnemySpawns.Count(sp => newGrid[sp.BlockX + sp.BlockY * _map.Width]._nextIndex < 0))
 			{
-				if(sp.Type == SpawnType.Enemy)
-				{
-					if(newGrid[sp.BlockX + sp.BlockY * _map.Width]._nextIndex == -1)
-					{
-						return false;
-					}
-				}
+				return false;
 			}
 			
 			Grid = newGrid;

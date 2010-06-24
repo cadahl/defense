@@ -8,16 +8,20 @@ namespace Client.GameObjects
 
 	public class Generic : GameObject
 	{
-		public static SpriteTemplate Puff = new SpriteTemplate("units", 36, 228, 32-4, 32-4, 0);
-		public static SpriteTemplate Puff2 = new SpriteTemplate("units", 40, 202, 16, 16, 0);
+		public static SpriteTemplate Puff = new SpriteTemplate { TilemapName = "units", Rectangle = new Rectangle(36, 228, 32-4, 32-4) };
+		public static SpriteTemplate Puff2 = new SpriteTemplate { TilemapName = "units", Rectangle = new Rectangle(40, 202, 16, 16) };
+
+		public override float Radius {
+			get {
+				return 4.0f;
+			}
+		}
 		
 		public SpriteTemplate SpriteTemplate
 		{
 			set
 			{
 				_sprite = new Sprite(value, 0, _priority);
-				Width = value.Width;
-				Height = value.Height;
 			}
 		}
 		

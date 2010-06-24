@@ -5,7 +5,6 @@ namespace Client
 	using System.Collections.Generic;
 	using System.Diagnostics;
 	using System.Threading;
-	using Client.Graphics;
 	using OpenTK;
 	using OpenTK.Graphics.OpenGL;
 	
@@ -13,7 +12,7 @@ namespace Client
 	{
 	    public Audio.Player AudioPlayer { get; private set; }
 	    public Input Input { get; private set; }
-	    public Renderer Renderer { get; private set; }
+	    public Graphics.Renderer Renderer { get; private set; }
 	    public Game Game { get; private set; }
 	   
 		[STAThread]
@@ -22,6 +21,7 @@ namespace Client
 			try 
 			{
 			    Application app = new Application();
+				app.Run();
 			}
 			catch(Exception ex) 
 			{
@@ -29,14 +29,11 @@ namespace Client
 			}
 	    }
 	
-	    public Application() 
+	    public void Run() 
 		{
-	        int sw = 1024;
-	        int sh = 768;
-	
 			this.AudioPlayer = new Audio.Player();
 			
-			this.Renderer = new Renderer(sw, sh);
+			this.Renderer = new Graphics.Renderer();
 			
 			this.Renderer.Update += (double time) => 
 			{
@@ -47,10 +44,7 @@ namespace Client
 					AudioPlayer.Update();
 			};
 
-			this.Renderer.Render += () => 
-			{
-				Game.Render();
-			};
+			this.Renderer.Render += () => { Game.Render(); } ;
 					
 	        this.Input = new Input(Renderer.Window);
 	        this.Game = new Game(this);

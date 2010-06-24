@@ -3,6 +3,10 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Defense", "Defense.csproj", "{74E04F41-537B-4755-97DA-19FA5D3A0892}"
 EndProject
+Project("{9344bdbb-3e7f-41fc-a0dd-8665d75ee146}") = "Packages", "Packages.mdproj", "{75059B25-091A-407C-9DCF-D57A67F142A6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Sharpmunktest", "Sharpmunktest\Sharpmunktest.csproj", "{BBC7E5C5-F1F2-4EB5-B765-CAF1C0289936}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|x86 = Debug|x86
@@ -13,6 +17,12 @@ Global
 		{74E04F41-537B-4755-97DA-19FA5D3A0892}.Debug|x86.Build.0 = Debug|x86
 		{74E04F41-537B-4755-97DA-19FA5D3A0892}.Release|x86.ActiveCfg = Release|x86
 		{74E04F41-537B-4755-97DA-19FA5D3A0892}.Release|x86.Build.0 = Release|x86
+		{75059B25-091A-407C-9DCF-D57A67F142A6}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{75059B25-091A-407C-9DCF-D57A67F142A6}.Release|x86.ActiveCfg = Release|Any CPU
+		{BBC7E5C5-F1F2-4EB5-B765-CAF1C0289936}.Debug|x86.ActiveCfg = Debug|x86
+		{BBC7E5C5-F1F2-4EB5-B765-CAF1C0289936}.Debug|x86.Build.0 = Debug|x86
+		{BBC7E5C5-F1F2-4EB5-B765-CAF1C0289936}.Release|x86.ActiveCfg = Release|x86
+		{BBC7E5C5-F1F2-4EB5-B765-CAF1C0289936}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
 		StartupItem = Defense.csproj

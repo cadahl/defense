@@ -3,6 +3,7 @@ namespace Client.GameObjects
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Linq;
 	using Client.Graphics;
 	using Util;
 
@@ -13,6 +14,12 @@ namespace Client.GameObjects
 
 		protected GameObject Target;
 
+		public override float Radius {
+			get {
+				return 16.0f;
+			}
+		}
+		
 		protected bool IsTargetInSight {
 			get {
 				if (Target == null)
@@ -47,8 +54,6 @@ namespace Client.GameObjects
 		{
 			X = x;
 			Y = y;
-			Width = 32;
-			Height = 32;
 			Angle = 0;
 			_game.Application.Renderer.Backgrounds[1].SetTile((int)X / 32, (int)Y / 32, 5, 5);
 		}
@@ -75,26 +80,15 @@ namespace Client.GameObjects
 
 		public override void Update(long ticks)
 		{
-			if ((Target != null && Util.Distance(X, Y, Target.X, Target.Y) > CurrentUpgrade.Range) || !_game.DoesObjectExist(Target))
+			if ((Target != null && Util.Distance(X, Y, Target.X, Target.Y) > CurrentUpgrade.Range) || !_game.Contains(Target))
 			{
 				Target = null;
 			}
 			
 			if (Target == null)
 			{
-				var targets = _game.FindObjectsWithinRadius(this, X, Y, CurrentUpgrade.Range, typeof(Vehicle));
-				float closest = float.MaxValue;
-				GameObject closestTarget = null;
-				foreach (var v in targets)
-				{
-					if (v.Distance < closest)
-					{
-						closest = v.Distance;
-						closestTarget = v.Object;
-					}
-				}
-				
-				Target = closestTarget;
+				var nearest = _game.FindNearestObjectWithinRadius(this, X, Y, CurrentUpgrade.Range, typeof(Vehicle));
+				Target = nearest != null ? nearest.Object : null;
 			}
 			
 			if (Target != null)

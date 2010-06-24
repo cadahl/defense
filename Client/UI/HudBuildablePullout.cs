@@ -24,8 +24,6 @@ namespace Client.UI
 		public Color4 Color = new Color4(0.07f, 0.07f, 0.07f, 1f);
 		public Color4 CaptionColor = Color4.White;
 		public Color4 LineColor = Color4.White;
-		private static SpriteTemplate _infoIcons = new SpriteTemplate ("units", 0, 32, 22, 22, 0,0,22, 0);
-		private static SpriteTemplate _captionIcons = new SpriteTemplate ("units", 0, 176, 16, 16, 0,0,0);
 		private static Color4 _TooExpensiveTextColor = new Color4(235,35,35,255);
 
 		public BuildablePulloutOptions Options = BuildablePulloutOptions.ShowAllRows;
@@ -67,9 +65,9 @@ namespace Client.UI
 			_iconPanel.Corners = Corners.Bottom;
 			_iconPanel.Color = Color;
 
-			_captionIcon = new Sprite(_captionIcons, Drawable.Flags.NoScroll, _basePriority+2);
+			//_captionIcon = new Sprite(_captionIcons, Drawable.Flags.NoScroll, _basePriority+2);
 
-			_icons = new Sprite(_infoIcons, Drawable.Flags.NoScroll, _basePriority+2);
+			_icons = new Sprite(_game.GetWidgetTemplate("bpinfoicons"), Drawable.Flags.NoScroll, _basePriority+2);
 			_icons.Resize(4);
 			_icons[0].Frame = 3;
 			_icons[1].Frame = 0;

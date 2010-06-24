@@ -2,13 +2,14 @@ namespace Client.GameObjects
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Drawing;
 	using Client;
 	using Client.Graphics;
 	using Util;
 
 	public class Bullet : GameObject
 	{
-		private static SpriteTemplate _bulletTmp = new SpriteTemplate ("units", 118, 7, 13, 3, 0);
+		private static SpriteTemplate _bulletTmp = new SpriteTemplate { TilemapName="units", Rectangle = new Rectangle(118, 7, 13, 3) };
 		private float _k;
 		private float _v;
 		private float _sourceX;
@@ -17,13 +18,17 @@ namespace Client.GameObjects
 		private float _targetY;
 		private Sprite _sprite;
 		private int _damage;
+
+		public override float Radius {
+			get {
+				return 4.0f;
+			}
+		}
 		
 		public Bullet (Game game, float x, float y, float targetX, float targetY, int damage) : base(game,0)
 		{
 			X = x;
 			Y = y;
-			Width = 2;
-			Height = 2;
 			_damage = damage;
 
 			float d = Util.Distance(x,y,targetX,targetY);
@@ -54,15 +59,16 @@ namespace Client.GameObjects
 			_game.AddCollider(c);
 		}
 
-		public void HandleHits(Collider c, List<ObjectAndDistance<GameObject>> gobs)
+		public void HandleHits(Collider c, IEnumerable<ObjectAndDistance> gobs)
 	    {
 			foreach(var gob in gobs)
 			{
 				Vehicle v = (Vehicle)gob.Object;
 				v.Damage(_damage);
+
+				_game.RemoveObject(this);
 			}
 
-			_game.RemoveObject(this);
 		}
 		
 		public override void Render ()

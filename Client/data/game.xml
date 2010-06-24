@@ -55,4 +55,15 @@
 		<wave text="Tanks spotted!" nextwavedelay="30" count="12" interval="2" unit="tank" hpmult="2.0"/>
 		<wave text="Last wave! Just a dozen to go." nextwavedelay="30" count="12" interval="2" unit="atv" hpmult="3.0"/>
 	</waves>
+
+	<hud>
+		<widget id="panel" x="64" y="320" w="16" h="16" center="false" frameoffset="8" />
+		
+		<widget id="buildcursor" x="128" y="160" w="32" h="32" />
+		<widget id="selhighlight" x="96" y="80" w="64" h="64" />
+		<widget id="upgradebutton" x="32" y="168" w="24" h="24" center="false" />
+		<widget id="sellbutton" x="80" y="168" w="24" h="24" center="false" />
+		<widget id="bpinfoicons" x="0" y="32" w="22" h="22" center="false" />
+		<widget id="baseicon" x="128" y="160" w="32" h="32" />
+	</hud>
 </game>

@@ -4,6 +4,7 @@ namespace Client.UI
 	using System.Collections.Generic;
 	using System.Drawing;
 	using System.Linq;
+	using System.Xml.Linq;
 	using Client.GameObjects;
 	using Client.Graphics;
 	using OpenTK;
@@ -23,11 +24,6 @@ namespace Client.UI
 		private double _ups;
 		private double[] _updateTimeFilter = new double[10];
 		
-		public static SpriteTemplate Panel = new SpriteTemplate ("units", 64, 320, 16, 16, 0, 0, 8, 0);
-		private SpriteTemplate _buildCursorTmp = new SpriteTemplate("units", 128, 192-32, 32, 32, 0);
-		private SpriteTemplate _selectionHighlightTmp = new SpriteTemplate("units", 96, 80, 64, 64, 0);
-		private SpriteTemplate _upgradeTmp = new SpriteTemplate("units", 32, 168, 24, 24, 0,0,0);
-		private SpriteTemplate _sellTmp = new SpriteTemplate("units", 80, 168, 24, 24, 0,0,0);
 		private Sprite[] _cursors = new Sprite[2];
 		private Sprite _selectionHighlight;
 		private Widget _upgradeButton, _sellButton;
@@ -69,15 +65,15 @@ namespace Client.UI
 
 			_toolbar = new HudToolbar(_game, r, _basePriority);
 
-			_cursors[0] = new Sprite(_buildCursorTmp, Drawable.Flags.Colorize, _basePriority+40);
+			_cursors[0] = new Sprite(_game.GetWidgetTemplate("buildcursor"), Drawable.Flags.Colorize, _basePriority+40);
 			_cursors[1] = new Sprite(null, Drawable.Flags.Colorize, _basePriority+41);
 			_cursors[1][0].Frame = (byte)0;
 
-			_selectionHighlight = new Sprite(_selectionHighlightTmp, 0, _basePriority);
+			_selectionHighlight = new Sprite(_game.GetWidgetTemplate("selhighlight"), 0, _basePriority);
 
-			_upgradeButton = new Widget(_upgradeTmp, _game, _basePriority+1);
+			_upgradeButton = new Widget(_game.GetWidgetTemplate("upgradebutton"), _game, _basePriority+1);
 			_upgradeButton.SetFlags(WidgetFlags.LevelCoordinates);
-			_sellButton = new Widget(_sellTmp, _game, _basePriority+1);
+			_sellButton = new Widget(_game.GetWidgetTemplate("sellbutton"), _game, _basePriority+1);
 			_sellButton.SetFlags(WidgetFlags.LevelCoordinates);
 
 			_upgradeButton[0].Color = new Color4(1.0f, 1.0f, 1.0f, 0.65f);
@@ -94,10 +90,11 @@ namespace Client.UI
 
 			_mousePointerCollider = Collider.Point(	0,
 			                                       	0,
-			                                       	delegate(Collider c, List<ObjectAndDistance<GameObject>> objects)
+			                                       	delegate(Collider c, IEnumerable<ObjectAndDistance> objects)
 			                                       	{
-														_hoverObject = objects.FirstOrDefault();
-
+														var o = objects.FirstOrDefault();
+														if(o != null)
+															_hoverObject = o.Object;
 													},
 													null );
 			_mousePointerCollider.FilterType = typeof(Buildable);
@@ -152,10 +149,14 @@ namespace Client.UI
 
 				_selectedObject = null;
 				var hoverObjs = _game.FindObjectsWithinRadius(null, _game.LevelMouseX, _game.LevelMouseY, 16.0f, typeof(Buildable));
-				if(hoverObjs.Count > 0)
+				if(hoverObjs != null)
 				{
-					_selectedObject = hoverObjs[0].Object;
-					HandleKeyDown(OpenTK.Input.Key.Number1);
+					var firstHoverObject = hoverObjs.FirstOrDefault();
+					if(firstHoverObject != null)
+					{
+						_selectedObject = firstHoverObject.Object;
+						HandleKeyDown(OpenTK.Input.Key.Number1);
+					}
 				}
 			}
 			else

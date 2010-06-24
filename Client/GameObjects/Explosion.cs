@@ -1,6 +1,7 @@
 namespace Client.GameObjects
 {
 	using System;
+	using System.Drawing;
 	using Client;
 	using Client.Graphics;
 	using Util;
@@ -21,6 +22,12 @@ namespace Client.GameObjects
 
 		private Sprite _sprite;
 		
+		public override float Radius {
+			get {
+				return 0f;
+			}
+		}
+		
 		public Explosion (Game game, float x, float y, ExplosionType type) : base(game, 0)
 		{
 			X = x;
@@ -31,16 +38,12 @@ namespace Client.GameObjects
 			switch (_type) {
 
 			case ExplosionType.Smoky:
-				_template = new SpriteTemplate ("units", 0, 832, 96, 96, 0);
+				_template = new SpriteTemplate () { TilemapName = "units", Rectangle = new Rectangle(0, 832, 96, 96) };
 				_frameCount = 16;
 				_animSpeed = 4f;
 				_lifeTime = -6;
 				break;
 			}
-			
-			Width = _template.Width;
-			Height = _template.Height;
-			
 			
 			_sprite = new Sprite(_template, 0, Priority.Explosion);
 			_sprite[0].Angle = (ushort)Util.RandomInt(0,4095);
@@ -49,10 +52,8 @@ namespace Client.GameObjects
 
 		public override void Update (long ticks)
 		{
-			//Rökpuff:
 			// Animationsframe baserad på hur länge vi levat.
 			_frame = (int)((float)_lifeTime / _animSpeed);
-
 
 			// Om animationen har spelats klart, ta bort oss och hoppa ur.
 			if (_frame >= _frameCount) 

@@ -47,8 +47,8 @@ namespace Client.Graphics
 			}
 		}
 
-		public int Width { get { return Template.Width; } }
-		public int Height { get { return Template.Height; } }
+		public int Width { get { return Template.Rectangle.Width; } }
+		public int Height { get { return Template.Rectangle.Height; } }
 
 		private Game _game;
 
@@ -71,8 +71,6 @@ namespace Client.Graphics
 		{
 			get
 			{
-				int left = X;
-				int top = Y;
 				int mx = _game.Application.Input.MouseX;
 				int my = _game.Application.Input.MouseY;
 
@@ -82,15 +80,11 @@ namespace Client.Graphics
 					my = (int)_game.LevelMouseY;
 				}
 
-				if((_flags & 0) != 0)
-				{
-					left -= Template.OffsetX;
-					top -= Template.OffsetY;
-				}
-
-				int right = left + Template.Width;
-				int bottom = top + Template.Height;
-
+				int left = X;
+				int top = Y;
+				int right = left + Template.Rectangle.Width;
+				int bottom = top + Template.Rectangle.Height;
+				
 				return mx >= left && mx < right && my >= top && my < bottom;
 			}
 		}

@@ -2,6 +2,7 @@ namespace Client.GameObjects
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Linq;
 	using Client;
 	using Client.Graphics;
 	using Util;
@@ -12,13 +13,17 @@ namespace Client.GameObjects
 		private float _sourceX, _sourceY;
 		private float _streakStart, _streakMid, _streakEnd;
 		private int _damage;
-				
+
+		public override float Radius {
+			get {
+				return 16.0f;
+			}
+		}
+		
 		public InstantBullet (Game game, float x, float y, float sourceX, float sourceY, int damage) : base( game, 0)
 		{
 			X = x;
 			Y = y;
-			Width = 16;
-			Height = 16;
 			
 			_sourceX = sourceX;
 			_sourceY = sourceY;
@@ -42,12 +47,9 @@ namespace Client.GameObjects
 			_game.AddCollider(c);
 		}
 		
-		public void HandleHit(Collider c, List<ObjectAndDistance<GameObject>> gobs)
+		public void HandleHit(Collider c, IEnumerable<ObjectAndDistance> gobs)
 		{
-			if(gobs.Count != 1)
-				throw new Exception("InstantBullet: gobs.Count == " + gobs.Count);
-
-			Vehicle v = (Vehicle)gobs[0].Object;
+			Vehicle v = (Vehicle)gobs.Single().Object;
 			if(v != null)
 				v.Damage(_damage);
 		}

@@ -8,6 +8,7 @@ namespace Client.Graphics
 		public Color4 Color = Color4.White;
 		public float X, Y, X2, Y2;
 		private float _a, _a2;
+		private Material _material;
 
 		public Line (float x, float y, float x2, float y2, float a, float a2, Flags flags, int priority) : base(flags, priority << 16)
 		{
@@ -21,8 +22,16 @@ namespace Client.Graphics
 
 		public override void BeginDraw (Renderer r)
 		{
-			GL.Enable (EnableCap.Blend);
+			GL.Disable (EnableCap.Blend);
 			GL.Disable (EnableCap.Texture2D);
+			
+			if(_material == null)
+			{
+				_material = r.GetMaterial("line");
+			}
+			
+			GL.Color4(255,255,255,255);
+			_material.Bind();
 		}
 
 		public override void EndDraw(Renderer r, int vertexCount)

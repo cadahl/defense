@@ -10,7 +10,6 @@
     <RootNamespace>Client</RootNamespace>
     <AssemblyName>Defense</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
-    <newfilesearch>OnLoad</newfilesearch>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,8 +19,9 @@
     <DefineConstants>DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <PlatformTarget>x86</PlatformTarget>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+    <LangVersion>future</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|x86' ">
     <DebugType>none</DebugType>
@@ -30,6 +30,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <LangVersion>future</LangVersion>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -95,7 +96,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Core" />
-    <Reference Include="Microsoft.JScript" />
   </ItemGroup>
   <ItemGroup>
     <None Include="data\defaultvs.glsl">
@@ -140,25 +140,6 @@
     <None Include="data\units.png">
       <DeployService-Deploy>true</DeployService-Deploy>
     </None>
-    <None Include="data\linefs.glsl" />
-    <None Include="data\linevs.glsl" />
-    <None Include="Defense.userprefs">
-      <Visible>False</Visible>
-    </None>
-    <None Include="data\menutank.png" />
-    <None Include="data\spritefs.glsl" />
-    <None Include="data\spritevs.glsl" />
-    <None Include="data\testmap2.tmx" />
-    <None Include="data\testmap4.tmx" />
-    <None Include="data\testmap5.tmx" />
-    <None Include="data\sound\357mag.au" />
-    <None Include="data\sound\Shotgun.wav" />
-    <None Include="data\sound\Shotgun_Pump.au" />
-    <None Include="data\sound\bomb.wav" />
-    <None Include="data\sound\cars005.wav" />
-    <None Include="data\sound\cars021.wav" />
-    <None Include="data\sound\machinegun.wav" />
-    <None Include="data\sound\s.mp3" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Audio\" />
@@ -166,16 +147,4 @@
     <Folder Include="Util\" />
     <Folder Include="Util\" />
   </ItemGroup>
-  <ProjectExtensions>
-    <MonoDevelop>
-      <Properties>
-        <Policies>
-          <StandardHeader inheritsSet="MITX11License" />
-          <ChangeLogPolicy UpdateMode="None" inheritsSet="Mono">
-            <MessageStyle LastFilePostfix=":&#xA;  " />
-          </ChangeLogPolicy>
-        </Policies>
-      </Properties>
-    </MonoDevelop>
-  </ProjectExtensions>
 </Project>

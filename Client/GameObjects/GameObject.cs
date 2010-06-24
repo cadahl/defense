@@ -26,8 +26,7 @@ namespace Client.GameObjects
 		protected Game _game;
 	    public float X;
 	    public float Y;
-	    public float Width;
-	    public float Height;
+	    public abstract float Radius { get; }
 
 		public int Angle { get;set; }
 		public int UpdatePriority { get; private set; }
@@ -47,8 +46,6 @@ namespace Client.GameObjects
 			_game = game;
 			X = 0;
 			Y = 0;
-			Width = 0;
-			Height = 0;
 	    }
 
 		protected virtual void Dispose(bool disposing)

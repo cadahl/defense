@@ -2,6 +2,7 @@ namespace Client.GameObjects
 {
 	using System;
 	using System.Collections.Generic;
+	using System.Linq;
 	using Client.Graphics;
 	using OpenTK.Graphics;
 	using Util;
@@ -10,7 +11,11 @@ namespace Client.GameObjects
 	public class Vehicle : GameObject
 	{
 		private Sprite _vehicleSprite;
-		private static SpriteTemplate DamagePuff = new SpriteTemplate ("units", 0, 80, 16, 16, 0);
+		private static SpriteTemplate DamagePuff = new SpriteTemplate 
+		{ 
+			TilemapName = "units", 
+			Rectangle = new Rectangle(0, 80, 16, 16) 
+		};
 
 		private float _targetSpeed;
 		private float _angleDampening, _angleDampening2;
@@ -18,7 +23,13 @@ namespace Client.GameObjects
 		public float Speed, MaxSpeed = 0.7f;
 		public float Acceleration = 0.05f;
 		public float TurnDampening = 0.15f;
-	
+
+		public override float Radius {
+			get {
+				return 16.0f;
+			}
+		}
+		
 		public enum Thought
 		{
 			Normal,
@@ -41,8 +52,6 @@ namespace Client.GameObjects
 		{
 			set
 			{
-				Width = value.Width;
-				Height = value.Height;
 				_vehicleSprite = new Sprite(value, 0, Priority.Vehicle); 
 			}
 		}
@@ -192,12 +201,13 @@ namespace Client.GameObjects
 								}
 
 								bool iWillDriveAnyway = true;
-								if(tooCloseObjects.Count != 0)
+								//if(tooCloseObjects. != 0)
 								{
 									int thisMuchOnCourse = Math.Abs(Angles.Difference(Angle,targetAngle));
-									foreach(Vehicle tco in tooCloseObjects)
+									foreach(var tco in tooCloseObjects)
 									{
-										if(tco.CurrentThought != Thought.Stopping && Math.Abs(Angles.Difference(tco.Angle, targetAngle)) < thisMuchOnCourse)
+										var v = (Vehicle)tco.Object;
+										if(v.CurrentThought != Thought.Stopping && Math.Abs(Angles.Difference(v.Angle, targetAngle)) < thisMuchOnCourse)
 										{
 											iWillDriveAnyway = false;
 											break;
