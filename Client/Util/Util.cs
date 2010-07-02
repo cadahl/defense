@@ -18,6 +18,9 @@ namespace Util
 		
 		public static int Difference(int a, int a2)
 		{
+			if(a == a2)
+				return 0;
+			
 			float dx,dy,dx2,dy2;
 			AngleToDirection(a, out dx, out dy);
 			AngleToDirection(a2, out dx2, out dy2);

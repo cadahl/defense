@@ -4,7 +4,7 @@ namespace Client.UI
 	using OpenTK;
 	using OpenTK.Graphics;
 	using Client.Graphics;
-	using Client.GameObjects;
+	using Client.Sim;
 	using Util;
 	
 	[Flags]
@@ -29,7 +29,6 @@ namespace Client.UI
 		public BuildablePulloutOptions Options = BuildablePulloutOptions.ShowAllRows;
 		public int X, Y;
 		public Buildable.UpgradeInfo Upgrade;
-		public bool TooExpensive;
 		public int CaptionIcon = -1;
 		public string Caption = null;
 
@@ -67,7 +66,7 @@ namespace Client.UI
 
 			//_captionIcon = new Sprite(_captionIcons, Drawable.Flags.NoScroll, _basePriority+2);
 
-			_icons = new Sprite(_game.GetWidgetTemplate("bpinfoicons"), Drawable.Flags.NoScroll, _basePriority+2);
+			_icons = new Sprite(_game.Config.GetWidgetTemplate("bpinfoicons"), Drawable.Flags.NoScroll, _basePriority+2);
 			_icons.Resize(4);
 			_icons[0].Frame = 3;
 			_icons[1].Frame = 0;
@@ -159,17 +158,17 @@ namespace Client.UI
 						if(i<4) _icons[i].Flags |= SpriteFlags.Disable;
 					}
 				}	
-				
 
-				_icons[0].Color = u.Price <= 0 ? Color4.Gray : (TooExpensive ? Color4.Gray : LineColor);
-				_icons[1].Color = u.Damage <= 0 || TooExpensive ? Color4.Gray : LineColor;
-				_icons[2].Color = u.ReloadTime <= 0 || TooExpensive ? Color4.Gray : LineColor;
-				_icons[3].Color = u.Range <= 0 || TooExpensive ? Color4.Gray : LineColor;
-				_text[0].Color = TooExpensive ? PulseColor(_TooExpensiveTextColor) : LineColor;
-				_text[1].Color = TooExpensive ? Color4.Gray : LineColor;
-				_text[2].Color = TooExpensive ? Color4.Gray : LineColor;
-				_text[3].Color = TooExpensive ? Color4.Gray : LineColor;
-				_text[4].Color = TooExpensive ? Color4.Gray : CaptionColor;
+				bool tooExpensive = !_game.CanAfford(u);
+				_icons[0].Color = u.Price <= 0 ? Color4.Gray : (tooExpensive ? Color4.Gray : LineColor);
+				_icons[1].Color = u.Damage <= 0 || tooExpensive ? Color4.Gray : LineColor;
+				_icons[2].Color = u.ReloadTime <= 0 || tooExpensive ? Color4.Gray : LineColor;
+				_icons[3].Color = u.Range <= 0 || tooExpensive ? Color4.Gray : LineColor;
+				_text[0].Color = tooExpensive ? PulseColor(_TooExpensiveTextColor) : LineColor;
+				_text[1].Color = tooExpensive ? Color4.Gray : LineColor;
+				_text[2].Color = tooExpensive ? Color4.Gray : LineColor;
+				_text[3].Color = tooExpensive ? Color4.Gray : LineColor;
+				_text[4].Color = tooExpensive ? Color4.Gray : CaptionColor;
 				
 				_panel.Width = Math.Max(minWidth,_text[4].Width + leftMargin+rightMargin);
 				//_panel.Corners = Corners.Top|Corners.BottomRight;

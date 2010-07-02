@@ -17,6 +17,8 @@ namespace Client.Graphics
 	    private List<string> _tilemapNames;
 		private Material _material;
 		
+		public int Width  { get { return _width; } }
+		public int Height  { get { return _height; } }
 		public bool Blended { get; set; }
 	
 	    public Background(Renderer r, Map m) 
@@ -48,6 +50,12 @@ namespace Client.Graphics
 			_material = r.GetMaterial("default");
 	    }
 
+		public void Clear()
+		{
+			for(int i = 0; i < _blocks.Count; ++i)
+				_blocks[i] = MapBlock.Empty;
+		}
+		
 		public void ClearTile(int x, int y)
 		{
 			_blocks[x + y * _width] = MapBlock.Empty;

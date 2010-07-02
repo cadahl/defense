@@ -43,31 +43,16 @@
     <Compile Include="Graphics\Sprite.cs" />
     <Compile Include="Graphics\SpriteTemplate.cs" />
     <Compile Include="Graphics\Tilemap.cs" />
-    <Compile Include="GameObjects\InstantBullet.cs" />
-    <Compile Include="GameObjects\Explosion.cs" />
-    <Compile Include="GameObjects\GameObject.cs" />
-    <Compile Include="GameObjects\Cannon.cs" />
-    <Compile Include="GameObjects\Bullet.cs" />
-    <Compile Include="GameObjects\Flamethrower.cs" />
-    <Compile Include="GameObjects\Vehicle.cs" />
-    <Compile Include="GameObjects\Generic.cs" />
-    <Compile Include="GameObjects\Wall.cs" />
     <Compile Include="Graphics\Material.cs" />
     <Compile Include="Graphics\VertexBuffer.cs" />
-    <Compile Include="GameObjects\Priority.cs" />
     <Compile Include="Collider.cs" />
-    <Compile Include="GameObjects\VehicleHealthBars.cs" />
     <Compile Include="Graphics\RenderToTexture.cs" />
     <Compile Include="Graphics\Text.cs" />
     <Compile Include="Graphics\Circle.cs" />
-    <Compile Include="GameObjects\Buildable.cs" />
     <Compile Include="Graphics\Panel.cs" />
     <Compile Include="Audio\Player.cs" />
-    <Compile Include="GameObjects\Machinegun.cs" />
     <Compile Include="GameConfig.cs" />
     <Compile Include="GameDebug.cs" />
-    <Compile Include="GameObjects\Tower.cs" />
-    <Compile Include="GameObjects\ObjectDatabase.cs" />
     <Compile Include="WaveGenerator.cs" />
     <Compile Include="UI\Hud.cs" />
     <Compile Include="UI\HudBuildablePullout.cs" />
@@ -85,6 +70,27 @@
     <Compile Include="Util\Util.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Application.cs" />
+    <Compile Include="Sim\InstantBullet.cs" />
+    <Compile Include="Sim\Explosion.cs" />
+    <Compile Include="Sim\GameObject.cs" />
+    <Compile Include="Sim\Cannon.cs" />
+    <Compile Include="Sim\Bullet.cs" />
+    <Compile Include="Sim\Flamethrower.cs" />
+    <Compile Include="Sim\Vehicle.cs" />
+    <Compile Include="Sim\Generic.cs" />
+    <Compile Include="Sim\Wall.cs" />
+    <Compile Include="Sim\Priority.cs" />
+    <Compile Include="Sim\Buildable.cs" />
+    <Compile Include="Sim\Machinegun.cs" />
+    <Compile Include="Sim\Tower.cs" />
+    <Compile Include="Sim\ObjectDatabase.cs" />
+    <Compile Include="Presentation\PresentationManager.cs" />
+    <Compile Include="Presentation\VehiclePresenter.cs" />
+    <Compile Include="Sim\State.cs" />
+    <Compile Include="Presentation\Config.cs" />
+    <Compile Include="Presentation\BuildablePresenter.cs" />
+    <Compile Include="NetworkServer.cs" />
+    <Compile Include="NetworkClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="OpenTK, Version=1.0.0.201, Culture=neutral, PublicKeyToken=bad199fe84eb3df4">
@@ -95,7 +101,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Core" />
-    <Reference Include="Microsoft.JScript" />
   </ItemGroup>
   <ItemGroup>
     <None Include="data\defaultvs.glsl">
@@ -165,6 +170,7 @@
     <Folder Include="UI\" />
     <Folder Include="Util\" />
     <Folder Include="Util\" />
+    <Folder Include="Presentation\" />
   </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
@@ -178,4 +184,10 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <ProjectReference Include="..\external\Lidgren.Network\Lidgren.Network.csproj">
+      <Project>{BA202214-F6F8-4853-BCC9-CA4F13C5F479}</Project>
+      <Name>Lidgren.Network</Name>
+    </ProjectReference>
+  </ItemGroup>
 </Project>

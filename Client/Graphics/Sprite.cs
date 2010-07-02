@@ -41,18 +41,31 @@ namespace Client.Graphics
 		public Sprite(SpriteTemplate st, Flags flags, int priority) : base(flags, priority)
 		{
 			Template = st;
-			Add(0,0,0);
+			Add();
+		}
+
+		public Instance Add()
+		{
+			Instance ins = new Instance();
+			_instances.Add(ins);
+			return ins;
 		}
 		
-		public void Add(float x, float y, int animationFrame)
+		public Instance Add(float x, float y, int animationFrame)
 		{
 			Instance ins = new Instance();
 			ins.X = x;
 			ins.Y = y;
 			ins.Frame = (byte)animationFrame;
 			_instances.Add(ins);
+			return ins;
 		}
 
+		public void Clear()
+		{
+			_instances.Clear();
+		}
+		
 		public void Resize(int newCount)
 		{
 			while(_instances.Count < newCount)

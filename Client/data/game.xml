@@ -3,6 +3,13 @@
 	<mode id="normal" startcash="1000" />
 
 	<units>
+		<effect id="bullet">
+			<sprite id="bullet" x="118" y="7" w="13" h="3" />
+		</effect>
+		<effect id="explosion">
+			<sprite id="explosion" x="0" y="832" w="96" h="96" />
+		</effect>
+	
 		<!-- 
 		Buildables:
 			reloadtime is in seconds
@@ -10,28 +17,28 @@
 			scx, scy is center of rotation measured from top left corner of sprite (exact middle would be sw/2 and sh/2)
 		-->
 	
-		<buildable id="wall">
+		<buildable id="wall" fullname="Client.Sim.Wall">
 			<upgrade id="0" caption="Wall" price="25" damage="0" reloadtime="0" range="0" />
 		</buildable>
 
-		<buildable id="machinegun">
-			<sprite id="weapon" sx="0" sy="512" sw="64" sh="64" scx="24" scy="32" />
-			<sprite id="flash" sx="160" sy="33" sw="64" sh="31" scx="8" scy="16" />
+		<buildable id="machinegun" fullname="Client.Sim.Machinegun">
+			<sprite id="weapon" x="0" y="512" w="64" h="64" cx="24" cy="32" />
+			<sprite id="flash" x="160" y="33" w="64" h="31" cx="8" cy="16" />
 			<upgrade id="0" caption="Machine gun" price="200" damage="10" reloadtime="20" range="100" />
 			<upgrade id="1" caption="Machine gun II" price="200" damage="15" reloadtime="20" range="130"  />
 			<upgrade id="2" caption="Machine gun III" price="200" damage="15" reloadtime="10" range="130"  />
 		</buildable>
 		
-		<buildable id="cannon">
-			<sprite id="weapon" sx="0" sy="576" sw="64" sh="64" scx="28" scy="32" />
-			<sprite id="flash" sx="96" sy="32" sw="64" sh="32" scx="12" scy="16" />
+		<buildable id="cannon" fullname="Client.Sim.Cannon">
+			<sprite id="weapon" x="0" y="576" w="64" h="64" cx="28" cy="32" />
+			<sprite id="flash" x="96" y="32" w="64" h="32" cx="12" cy="16" />
 			<upgrade id="0" caption="Cannon" price="300" damage="100" reloadtime="120" range="120" />
 			<upgrade id="1" caption="Cannon II" price="100" damage="150" reloadtime="120" range="150" />
 			<upgrade id="2" caption="Cannon III" price="100" damage="150" reloadtime="120" range="150" />
 		</buildable> 
 
-		<buildable id="flamethrower">
-			<sprite id="weapon" sx="0" sy="640" sw="64" sh="64" scx="26" scy="32" />
+		<buildable id="flamethrower" fullname="Client.Sim.Flamethrower">
+			<sprite id="weapon" x="0" y="640" w="64" h="64" cx="26" cy="32" />
 			<upgrade id="0" caption="Flame thrower" price="600" damage="6" reloadtime="2" range="80" />
 			<upgrade id="1" caption="Flame thrower II" price="600" damage="9" reloadtime="2" range="120" />
 		</buildable>
@@ -41,11 +48,21 @@
 			speed is in pixels per 1/60 seconds, and means MAX speed
 		-->
 		
-		<vehicle id="atv" speed="0.8" hp="400" reward="150" sx="512" sy="512" sw="64" sh="64" />
-		<vehicle id="tank" speed="0.5" hp="700" reward="200" sx="576" sy="512" sw="64" sh="64" />
-		<vehicle id="armoredgun" speed="0.7" hp="500" reward="200" sx="640" sy="512" sw="64" sh="64" />
-		<vehicle id="startruck" speed="0.6" hp="400" reward="150" sx="704" sy="512" sw="64" sh="64" />
-		<vehicle id="greentruck" speed="0.6" hp="600" reward="150" sx="768" sy="512" sw="64" sh="64" />
+		<vehicle id="atv" speed="0.8" hp="400" reward="150">
+			<sprite id="vehicle" x="512" y="512" w="64" h="64" />
+		</vehicle>
+		<vehicle id="tank" speed="0.5" hp="700" reward="200">
+			<sprite id="vehicle" x="576" y="512" w="64" h="64" />
+		</vehicle>
+		<vehicle id="armoredgun" speed="0.7" hp="500" reward="200">
+			<sprite id="vehicle" x="640" y="512" w="64" h="64" />
+		</vehicle>
+		<vehicle id="startruck" speed="0.6" hp="400" reward="150">
+			<sprite id="vehicle" x="704" y="512" w="64" h="64" />
+		</vehicle>
+		<vehicle id="greentruck" speed="0.6" hp="600" reward="150">
+			<sprite id="vehicle" sx="768" sy="512" sw="64" sh="64" />
+		</vehicle>
 	</units>
 	<waves>
 		<wave text="First wave!" nextwavedelay="30" count="5" interval="2" unit="atv" hpmult="1.0"/>

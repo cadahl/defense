@@ -2,7 +2,7 @@ namespace Client.UI
 {
 	using System;
 	using OpenTK.Graphics;
-	using Client.GameObjects;
+	using Client.Sim;
 	using Client.Graphics;
 
 	public enum ToolbarEntries
@@ -19,48 +19,29 @@ namespace Client.UI
 	{
 		private Game _game;
 
-		public ToolbarEntry(Game game, Type buildType, int priority)
+		public ToolbarEntry(Game game, string buildTypeId, int priority)
 		{
 			_game = game;
 
-			if(buildType != null)
+			if(!string.IsNullOrEmpty(buildTypeId))
 			{
-				BuildType = buildType;
-				var u = _game.GetUpgradeInfo(buildType,0);
+				//BuildTypeId = buildTypeId;
+				Buildable = _game.Config.GetBuildableUpgrade(buildTypeId,0);
 
 				SpriteTemplate st;
-				if(u.SpriteTemplates.TryGetValue("weapon", out st))
+				if(Buildable.SpriteTemplates.TryGetValue("weapon", out st))
 				{
 					WeaponIcon = new Sprite(st, Drawable.Flags.NoScroll | Drawable.Flags.Colorize, priority);
 				}
 			}
 		}
 
-		public bool CanBuy
-		{
-			get
-			{
-				var u = _game.GetUpgradeInfo(BuildType, 0);
-				return u != null && u.Price <= _game.Cash;
-			}
-		}
 
-		public int Range
-		{
-			get
-			{
-				var u = _game.GetUpgradeInfo(BuildType, 0);
-				if(u != null)
-					return u.Range;
-				else
-					return 0;
-			}
-		}
-
-		public Type BuildType;
+		//public string BuildTypeId { get; private set; }
 		public BuildablePulloutOptions PulloutOptions;
 		public int CursorFrame;
-		public Sprite WeaponIcon;
+		public Sprite WeaponIcon { get; private set; }
+		public Buildable.UpgradeInfo Buildable { get; private set; }
 	}
 
 	public class HudToolbar
@@ -79,6 +60,7 @@ namespace Client.UI
 		public int SelectedIconIndex;
 		public ToolbarEntry[] Icons;
 		public ToolbarEntry SelectedIcon { get { return Icons[SelectedIconIndex]; } }
+		public Buildable.UpgradeInfo SelectedBuildable { get { return SelectedIcon != null ? SelectedIcon.Buildable : null; } }
 
 		public static Color4 PanelColor = new Color4(0.0f, 0.0f, 0.0f, .5f);
 		public static Color4 SelectedBuildableIconColor = new Color4(.14f, .14f, .14f, 1f);
@@ -98,7 +80,7 @@ namespace Client.UI
 			_toolbarPanel.Color = PanelColor;
 			_toolbarPanel.Corners = 0;
 
-			_baseIcon = new Sprite(_game.GetWidgetTemplate("baseicon"), Drawable.Flags.NoScroll|Drawable.Flags.Colorize, _basePriority+1);
+			_baseIcon = new Sprite(_game.Config.GetWidgetTemplate("baseicon"), Drawable.Flags.NoScroll|Drawable.Flags.Colorize, _basePriority+1);
 			_baseIcon.Resize((int)ToolbarEntries.Count);
 
 			_cashText = new TextLine(r,0,0,basePriority+1);
@@ -111,22 +93,22 @@ namespace Client.UI
 				CursorFrame = 0,
 				PulloutOptions = BuildablePulloutOptions.ShowCaption|BuildablePulloutOptions.ShowIconTab
 			};
-			Icons[(int)ToolbarEntries.Wall] = new ToolbarEntry(_game, typeof(Wall), _basePriority+2)
+			Icons[(int)ToolbarEntries.Wall] = new ToolbarEntry(_game, "wall", _basePriority+2)
 			{
 				CursorFrame = 2,
 				PulloutOptions = BuildablePulloutOptions.ShowCaption|BuildablePulloutOptions.ShowPrice|BuildablePulloutOptions.ShowIconTab
 			};
-			Icons[(int)ToolbarEntries.Machinegun] = new ToolbarEntry(_game, typeof(Machinegun), _basePriority+2)
+			Icons[(int)ToolbarEntries.Machinegun] = new ToolbarEntry(_game, "machinegun", _basePriority+2)
 			{
 				CursorFrame = 1,
 				PulloutOptions = BuildablePulloutOptions.ShowAllRows|BuildablePulloutOptions.ShowIconTab,
 			};
-			Icons[(int)ToolbarEntries.Cannon] = new ToolbarEntry(_game, typeof(Cannon), _basePriority+2)
+			Icons[(int)ToolbarEntries.Cannon] = new ToolbarEntry(_game, "cannon", _basePriority+2)
 			{
 				CursorFrame = 1,
 				PulloutOptions = BuildablePulloutOptions.ShowAllRows|BuildablePulloutOptions.ShowIconTab,
 			};
-			Icons[(int)ToolbarEntries.Flamethrower] = new ToolbarEntry(_game, typeof(Flamethrower), _basePriority+2)
+			Icons[(int)ToolbarEntries.Flamethrower] = new ToolbarEntry(_game, "flamethrower", _basePriority+2)
 			{
 				CursorFrame = 1,
 				PulloutOptions = BuildablePulloutOptions.ShowAllRows|BuildablePulloutOptions.ShowIconTab,
@@ -144,26 +126,26 @@ namespace Client.UI
 
 			for(int iconi = 0; iconi < Icons.Length; ++iconi)
 			{
+				var icon = Icons[iconi];
+				var b = icon.Buildable;
+				var u = b != null ? _game.Config.GetBuildableUpgrade(b.TypeId,0) : null;
+				
 				bool isSelected = SelectedIconIndex == iconi;
-				var u = _game.GetUpgradeInfo(Icons[iconi].BuildType,0);
-				bool tooExpensive = u != null && u.Price > _game.Cash;
 				
-				Color4 c = isSelected ? (iconi==0 ? SelectedMarkerIconColor : SelectedBuildableIconColor) : Color4.Black;
-				
-				c = tooExpensive ? TooExpensiveBuildableIconColor : c;
+				Color4 c = isSelected ? (iconi == 0 ? SelectedMarkerIconColor : SelectedBuildableIconColor) : Color4.Black;
+				c = _game.CanAfford(b) ? c : TooExpensiveBuildableIconColor;
 				
 				_baseIcon[iconi].X = IconLeft + IconSpacing * iconi; 
 				_baseIcon[iconi].Y = _toolbarPanel.Y + Height/2;
-				_baseIcon[iconi].Frame = (byte)Icons[iconi].CursorFrame;
+				_baseIcon[iconi].Frame = (byte)icon.CursorFrame;
 				_baseIcon[iconi].Color = c;
 				
-				var wi = Icons[iconi].WeaponIcon;
-				if(wi != null)
+				if(icon.WeaponIcon != null)
 				{
-					wi[0].X = _baseIcon[iconi].X;
-					wi[0].Y = _baseIcon[iconi].Y;
-					wi[0].Color = c;
-					r.AddDrawable(wi);
+					icon.WeaponIcon[0].X = _baseIcon[iconi].X;
+					icon.WeaponIcon[0].Y = _baseIcon[iconi].Y;
+					icon.WeaponIcon[0].Color = c;
+					r.AddDrawable(icon.WeaponIcon);
 				}					
 			}	
 

@@ -7,6 +7,7 @@ namespace Client
 	using System.Threading;
 	using OpenTK;
 	using OpenTK.Graphics.OpenGL;
+	using Defense;
 	
 	public class Application 
 	{
@@ -14,6 +15,8 @@ namespace Client
 	    public Input Input { get; private set; }
 	    public Graphics.Renderer Renderer { get; private set; }
 	    public Game Game { get; private set; }
+		public NetworkServer Server { get; private set; }
+		public NetworkClient Client { get; private set; }
 	   
 		[STAThread]
 	    public static void Main(string[] args) 
@@ -31,6 +34,9 @@ namespace Client
 	
 	    public void Run() 
 		{
+			this.Server = new NetworkServer();
+			this.Client = new NetworkClient();
+			
 			this.AudioPlayer = new Audio.Player();
 			
 			this.Renderer = new Graphics.Renderer();

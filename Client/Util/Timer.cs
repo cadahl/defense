@@ -11,7 +11,7 @@ namespace Util
 
 		public TimerMode Mode { set; get; }
 		
-		public int ResetValue { set { _resetValue = value; } }
+		public int ResetValue { get { return _resetValue; } set { _resetValue = value; } }
 		
 		public Timer(TimerMode mode)
 		{

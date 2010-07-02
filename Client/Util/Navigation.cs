@@ -170,7 +170,7 @@ namespace Util
 			return true;
 		}
 		
-		public bool Rebuild(List<Point> blockers)
+		public bool Rebuild(IEnumerable<Point> blockers)
 		{
 			NavNode[] newGrid = new NavNode[_map.Width * _map.Height]; 
 			PriorityQueueB<int> open = new PriorityQueueB<int>( (a,b) => newGrid[a]._cost.CompareTo(newGrid[b]._cost) );

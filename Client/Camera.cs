@@ -2,7 +2,7 @@ namespace Client
 {
 	using System;
 	using Client.Graphics;
-	using Client.GameObjects;
+	using Client.Sim;
 
 	/**
  * Låter användaren styra runt en "kamera" och titta på leveln. Spectator-style.

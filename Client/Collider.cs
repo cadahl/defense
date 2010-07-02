@@ -2,7 +2,7 @@ namespace Client
 {
 	using System;
 	using System.Collections.Generic;
-	using Client.GameObjects;
+	using Client.Sim;
 	
 	public delegate void CollisionHandler(Collider c, IEnumerable<ObjectAndDistance> objects);
 	

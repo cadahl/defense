@@ -5,11 +5,12 @@ namespace Client
 	using System.Xml.Linq;
 	using System.Collections.Generic;
 	using System.Drawing;
+	using System.Reflection;
 	using Client.Graphics;
-	using Client.GameObjects;
+	using Client.Sim;
 	using Util;
 
-	public partial class Game : GameObjects.ObjectDatabase
+	public partial class Game : Sim.ObjectDatabase
 	{
 		public Application Application { get; private set; }
 
@@ -25,20 +26,25 @@ namespace Client
 			return _buildings[bx + @by * Map.Width];
 		}
 
-
 		private List<Buildable> _buildings;
 		private List<Point> _blockers;
 		private Camera _camera;
 		private List<Collider> _colliders = new List<Collider> ();
 		private UI.Hud _hud;
 		private WaveGenerator _waveGenerator;
-
+		private Presentation.PresentationManager _pm;
+		private Sim.Config _config;
+		
+		public Sim.Config Config { get { return _config; } }
+		
 		public Game (Application app)
 		{
 			Application = app;
-			LoadConfig ();
+			_config = new Sim.Config();
 			
 			_hud = new UI.Hud (this);
+
+			_pm = new Presentation.PresentationManager(Application.Renderer, this);
 			
 			LoadMap ("data/testmap6.tmx");
 			_buildings = new List<Buildable> (Enumerable.Repeat ((Buildable)null, Map.Width * Map.Height));
@@ -46,28 +52,22 @@ namespace Client
 			
 			Navigation = new Navigation (Map, Map.Base.BlockX, Map.Base.BlockY);
 			
-			AddObject (new VehicleHealthBars (this));
-			
 			_waveGenerator = new WaveGenerator (this);
 			
 			_waveGenerator.WaveCountdown += delegate(Wave current, Wave next, int extra) { _hud.ShowNextWaveWarning (next.Text, extra); };
 			_waveGenerator.WaveStarted += delegate(Wave current, Wave next, int extra) { _hud.ShowNextWaveWarning ("", -1); };
 			
-			// Load game mode settings
-			string modeName = "normal";
-			try {
-				var mode = Config.Elements ("mode").Where (m => (string)m.Attribute ("id") == modeName).Single ();
-				
-				Cash = (int)mode.Attribute ("startcash");
-			} catch (InvalidOperationException ioe) {
-				Console.WriteLine ("Game: Couldn't load mode settings.");
-			}
 			
+			Cash = 1000;
 			
-			app.Input.KeyDown += delegate(OpenTK.Input.Key key) {
-				if (key == OpenTK.Input.Key.F1) {
+			app.Input.KeyDown += delegate(OpenTK.Input.Key key) 
+			{
+				if (key == OpenTK.Input.Key.F1) 
+				{
 					ShowNavigationMap = !ShowNavigationMap;
-				} else if (key == OpenTK.Input.Key.F2) {
+				} 
+				else if (key == OpenTK.Input.Key.F2) 
+				{
 					ShowVehicleProbes = !ShowVehicleProbes;
 				}
 			};
@@ -200,7 +200,7 @@ namespace Client
 			return _buildings[i] != null;
 		}
 
-		public bool BuildAt (int bx, int @by, Type type)
+		public bool BuildAt (int bx, int @by, Buildable.UpgradeInfo bu)
 		{
 			if (bx < 0 || bx >= Map.Width || @by < 0 || @by >= Map.Height)
 				return false;
@@ -210,17 +210,21 @@ namespace Client
 			
 			int i = bx + @by * Map.Width;
 			
-			if (_buildings[i] == null) {
+			if (_buildings[i] == null &&
+			    bu.Type != null) 
+			{
 				_blockers.Add (new Point (bx, @by));
-				
-				if (Navigation.Rebuild (_blockers)) {
-					_buildings[i] = (Buildable)System.Activator.CreateInstance (type, new object[] { this, bx * 32 + 16, @by * 32 + 16 });
-					_buildings[i].Upgrades = GetUpgradeInfos (type);
+				if (Navigation.Rebuild (_blockers)) 
+				{
+					_buildings[i] = (Buildable)System.Activator.CreateInstance(bu.Type, new object[] { this, bx * 32 + 16, @by * 32 + 16 });
+					_buildings[i].Upgrades = _config.GetBuildableUpgrades(bu.TypeId).ToList();
 					_buildings[i].CurrentUpgradeIndex = 0;
 					AddObject (_buildings[i]);
 					Cash -= _buildings[i].CurrentUpgrade.Price;
 					return true;
-				} else {
+				} 
+				else 
+				{
 					_blockers.RemoveAt (_blockers.Count - 1);
 				}
 			}
@@ -232,15 +236,16 @@ namespace Client
 		{
 			int i = _buildings.FindIndex (b => b == building);
 			
-			if (i < 0)
-				return;
-			
-			int bx = i % Map.Width;
-			int @by = i / Map.Width;
-			
-			if (building.CurrentUpgradeIndex < building.Upgrades.Length - 1) {
-				_buildings[i].CurrentUpgradeIndex++;
-				Cash -= _buildings[i].CurrentUpgrade.Price;
+			if (i >= 0)
+			{
+				int bx = i % Map.Width;
+				int @by = i / Map.Width;
+				
+				if (building.CurrentUpgradeIndex < building.Upgrades.Count - 1) 
+				{
+					_buildings[i].CurrentUpgradeIndex++;
+					Cash -= _buildings[i].CurrentUpgrade.Price;
+				}
 			}
 		}
 
@@ -251,24 +256,26 @@ namespace Client
 			if (i < 0)
 				return;
 			
-			int bx = i % Map.Width;
-			int @by = i / Map.Width;
+			var p = new Point (i % Map.Width, i / Map.Width);
 			
-			_blockers.Remove (new Point (bx, @by));
-			
-			Console.WriteLine ("sell...");
-			
-			if (Navigation.Rebuild (_blockers)) {
-				Console.WriteLine ("sell!");
+			if (Navigation.Rebuild (_blockers.Where(b => b != p))) 
+			{
 				RemoveObject (_buildings[i]);
 				Cash += _buildings[i].CurrentUpgrade.Price;
 				_buildings[i] = null;
-			} else {
-				Console.WriteLine ("no sell");
-				_blockers.Add (new Point (bx, @by));
+				_blockers.Remove(p);
+			} 
+			else 
+			{
+				_blockers.Add(p);
 			}
 		}
 
+		public bool CanAfford(Buildable.UpgradeInfo upgrade)
+		{
+			return upgrade == null || upgrade.Price <= Cash;
+		}
+		
 		public void Render ()
 		{
 			lock (_objects) {
@@ -276,6 +283,8 @@ namespace Client
 					obj.Render ();
 				}
 			}
+			
+			_pm.Present();
 			
 			Renderer r = Application.Renderer;
 			

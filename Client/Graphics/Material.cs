@@ -7,7 +7,7 @@ namespace Client.Graphics
 	using System.IO;
 	using OpenTK;
 	using OpenTK.Graphics.OpenGL;
-	using Client.Graphics;
+	//using Client.Graphics;
 
 	public class Material : IDisposable
 	{

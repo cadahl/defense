@@ -1,4 +1,4 @@
-namespace Client
+namespace Client.Sim
 {
 	using System;
 	using System.Collections;
@@ -6,9 +6,8 @@ namespace Client
 	using System.Drawing;
 	using System.Linq;
 	using Util;
-	using Client.GameObjects;
 	using Client.Graphics;
-
+	
 	public class Wave : ICloneable
 	{
 		public object Clone ()
@@ -70,7 +69,7 @@ namespace Client
 				if(timer.Value < 10*60)
 				{
 					if(WaveCountdown != null)
-						WaveCountdown(CurrentWave, NextWave, timer.Value/60+1);
+						WaveCountdown(CurrentWave, NextWave, timer.Value/10+1);
 				}
 			};
 
@@ -92,7 +91,7 @@ namespace Client
 		private void LoadWaves()
 		{
 			_waves = (
-				from w in _game.Config.Element("waves").Elements("wave")
+				from w in _game.Config.Xml.Element("waves").Elements("wave")
 				select new Wave()
 				{
 					Text = (string)w.Attribute("text"),
@@ -107,26 +106,22 @@ namespace Client
 			NextWave = (Wave)_waves.Current.Clone();
 		}
 
-		private void SpawnUnit(string name, float x, float y, float difficulty)
+		private void SpawnUnit(string typeId, float x, float y, float difficulty)
 		{
-			_game.AddObject((	from v in _game.Config.Element("units").Elements("vehicle")
-					            where (string)v.Attribute("id") == name
-					            select new Vehicle(_game)
+			var vehicle = (	from v in _game.Config.Xml.Element("units").Elements("vehicle")
+					            where (string)v.Attribute("id") == typeId
+			                 	from s in v.Elements("sprite")
+			                 	where (string)s.Attribute("id") == "vehicle"
+					            select new Vehicle(_game, typeId)
 					            {
 									X = x,
 									Y = y,
-									Template = new SpriteTemplate 
-									{
-										TilemapName = "units",
-					                    Rectangle = new Rectangle( (int)v.Attribute("sx"),
-					                                               (int)v.Attribute("sy"),
-					                                               (int)v.Attribute("sw"),
-					                                               (int)v.Attribute("sh"))
-									},
 									MaxSpeed = (float)v.Attribute("speed"),
 									HitPoints = (int)((int)v.Attribute("hp") * difficulty),
 									Reward = (int)v.Attribute("reward")
-								}).Single());
+								}).Single();
+			
+			_game.AddObject(vehicle);
 		}
 
 		public void Update()

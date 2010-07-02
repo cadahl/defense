@@ -1,1 +1,18 @@
-<?xml version="1.0" encoding="utf-8"?><Project DefaultTargets="Build" ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">  <PropertyGroup>    <ItemType>PackagingProject</ItemType>    <ProductVersion>9.0.21022</ProductVersion>    <SchemaVersion>2.0</SchemaVersion>    <ProjectGuid>{75059B25-091A-407C-9DCF-D57A67F142A6}</ProjectGuid>    <Packages>      <Packages xmlns="">        <Package name="Binaries">          <Builder targetFile="..\Deploy\Defense.zip" platform="Linux" configuration="Release|x86" ctype="BinariesZipPackageBuilder">            <RootEntry path="Defense.csproj" />          </Builder>        </Package>      </Packages>    </Packages>  </PropertyGroup></Project>
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="3.5" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ItemType>PackagingProject</ItemType>
+    <ProductVersion>9.0.21022</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{75059B25-091A-407C-9DCF-D57A67F142A6}</ProjectGuid>
+    <Packages>
+      <Packages>
+        <Package name="Binaries">
+          <Builder targetFile="..\Deploy\Defense.zip" platform="Linux" configuration="Release|x86" ctype="BinariesZipPackageBuilder">
+            <RootEntry path="Defense.csproj" />
+          </Builder>
+        </Package>
+      </Packages>
+    </Packages>
+  </PropertyGroup>
+</Project>

@@ -5,7 +5,7 @@ namespace Client.UI
 	using System.Drawing;
 	using System.Linq;
 	using System.Xml.Linq;
-	using Client.GameObjects;
+	using Client.Sim;
 	using Client.Graphics;
 	using OpenTK;
 	using OpenTK.Graphics;
@@ -65,15 +65,15 @@ namespace Client.UI
 
 			_toolbar = new HudToolbar(_game, r, _basePriority);
 
-			_cursors[0] = new Sprite(_game.GetWidgetTemplate("buildcursor"), Drawable.Flags.Colorize, _basePriority+40);
+			_cursors[0] = new Sprite(_game.Config.GetWidgetTemplate("buildcursor"), Drawable.Flags.Colorize, _basePriority+40);
 			_cursors[1] = new Sprite(null, Drawable.Flags.Colorize, _basePriority+41);
 			_cursors[1][0].Frame = (byte)0;
 
-			_selectionHighlight = new Sprite(_game.GetWidgetTemplate("selhighlight"), 0, _basePriority);
+			_selectionHighlight = new Sprite(_game.Config.GetWidgetTemplate("selhighlight"), 0, _basePriority);
 
-			_upgradeButton = new Widget(_game.GetWidgetTemplate("upgradebutton"), _game, _basePriority+1);
+			_upgradeButton = new Widget(_game.Config.GetWidgetTemplate("upgradebutton"), _game, _basePriority+1);
 			_upgradeButton.SetFlags(WidgetFlags.LevelCoordinates);
-			_sellButton = new Widget(_game.GetWidgetTemplate("sellbutton"), _game, _basePriority+1);
+			_sellButton = new Widget(_game.Config.GetWidgetTemplate("sellbutton"), _game, _basePriority+1);
 			_sellButton.SetFlags(WidgetFlags.LevelCoordinates);
 
 			_upgradeButton[0].Color = new Color4(1.0f, 1.0f, 1.0f, 0.65f);
@@ -105,12 +105,6 @@ namespace Client.UI
 			game.Application.Input.KeyDown += HandleKeyDown;
         }
 
-		public void WriteMessage(string s)
-		{
-		//	_msgLine.Text = s;
-		//	_messageTime = _updateCount;
-		}
-
 		private void HandleMouseDown(int mouseX, int mouseY, OpenTK.Input.MouseButton button)
 		{
 			if(mouseY < _game.Application.Renderer.Height-HudToolbar.Height)
@@ -130,19 +124,18 @@ namespace Client.UI
 					}
 					else
 					{
-						if(_toolbar.SelectedIcon.CanBuy)
+						if(_toolbar.SelectedBuildable != null)
 						{
-							int bx = (int)_game.LevelMouseX/32;
-							int by = (int)_game.LevelMouseY/32;
-							
-							if(!_game.BuildAt(bx, by, _toolbar.SelectedIcon.BuildType))
+							if(_game.CanAfford(_toolbar.SelectedBuildable))
 							{
-								WriteMessage("Can't build there.");
+								int bx = (int)_game.LevelMouseX/32;
+								int by = (int)_game.LevelMouseY/32;
+								
+								if(!_game.BuildAt(bx, by, _toolbar.SelectedBuildable))
+								{
+									Console.WriteLine("Can't build there.");
+								}
 							}
-						}
-						else
-						{
-							WriteMessage("Not enough cash!");
 						}
 					}
 				}
@@ -164,8 +157,6 @@ namespace Client.UI
 				int iconIndex = (mouseX-32)/HudToolbar.IconSpacing;
 				HandleKeyDown(OpenTK.Input.Key.Number1+iconIndex);
 			}
-
-
 		}
 		
 		private void HandleKeyDown(OpenTK.Input.Key key)
@@ -179,10 +170,10 @@ namespace Client.UI
 				if(iconi > 0)
 				{
 					_selectedObject = null;
-					WriteMessage("Click to build a " + _game.GetUpgradeInfo(_toolbar.SelectedIcon.BuildType,0).Caption + ".");
+				//	WriteMessage("Click to build a " + _game.Config.GetBuildableUpgrade(_toolbar.SelectedBuildable.TypeId,0).Caption + ".");
 				}
-				else
-					WriteMessage("Click to select a unit."); 
+			//	else
+			//		WriteMessage("Click to select a unit."); 
 			}
 		}
 		
@@ -231,24 +222,23 @@ namespace Client.UI
 							_bpullout.Caption = "Sell";
 						}
 						else
-						if(_showUpgrade && (b.CurrentUpgradeIndex+1) < b.Upgrades.Length)
-						{
-							_bpullout.Upgrade = b.Upgrades[b.CurrentUpgradeIndex+1];
-							_bpullout.Options = BuildablePulloutOptions.ShowAllRows|BuildablePulloutOptions.ShowIconTab;
-							_bpullout.CaptionIcon = 0;
-							_bpullout.CaptionColor = UpgradeColor;
-							_bpullout.LineColor = Color4.White;
-							_bpullout.Caption = "Upgrade";
-						}
-						else
-						{
-							_bpullout.Upgrade = b.CurrentUpgrade;
-							_bpullout.Options = (BuildablePulloutOptions.ShowAllRows|BuildablePulloutOptions.ShowIconTab) & ~BuildablePulloutOptions.ShowPrice;
-							_bpullout.CaptionIcon = -1;
-							_bpullout.CaptionColor = Color4.LightGray;
-							_bpullout.LineColor = Color4.LightGray;
-
-						}
+							if(_showUpgrade && (b.CurrentUpgradeIndex+1) < b.Upgrades.Count)
+							{
+								_bpullout.Upgrade = b.Upgrades[b.CurrentUpgradeIndex+1];
+								_bpullout.Options = BuildablePulloutOptions.ShowAllRows|BuildablePulloutOptions.ShowIconTab;
+								_bpullout.CaptionIcon = 0;
+								_bpullout.CaptionColor = UpgradeColor;
+								_bpullout.LineColor = Color4.White;
+								_bpullout.Caption = "Upgrade";
+							}
+							else
+							{
+								_bpullout.Upgrade = b.CurrentUpgrade;
+								_bpullout.Options = (BuildablePulloutOptions.ShowAllRows|BuildablePulloutOptions.ShowIconTab) & ~BuildablePulloutOptions.ShowPrice;
+								_bpullout.CaptionIcon = -1;
+								_bpullout.CaptionColor = Color4.LightGray;
+								_bpullout.LineColor = Color4.LightGray;
+							}
 					}
 				}
 				else
@@ -259,17 +249,14 @@ namespace Client.UI
 					_bpullout.CaptionColor = Color4.White;
 					_bpullout.LineColor = Color4.White;
 				}
-
-				_bpullout.TooExpensive = false;
 			}
 			else
 			{
-				_bpullout.Upgrade = _game.GetUpgradeInfo(_toolbar.SelectedIcon.BuildType,0);
+				_bpullout.Upgrade = _game.Config.GetBuildableUpgrade(_toolbar.SelectedBuildable.TypeId, 0);
 				_bpullout.Options = _toolbar.SelectedIcon.PulloutOptions;
 				_bpullout.CaptionIcon = -1;
 				_bpullout.CaptionColor = Color4.White;
 				_bpullout.LineColor = Color4.White;
-				_bpullout.TooExpensive = !_toolbar.SelectedIcon.CanBuy;
 			}
 
 			_bpullout.Render(r);
@@ -288,74 +275,74 @@ namespace Client.UI
 			_cursors[0][0].Y = cursory;
 			_cursors[0][0].Flags &= ~SpriteFlags.Disable;
 
+			var b = _selectedObject as Buildable;
+
+			if(b != null)
 			{
-				var b = _selectedObject as Buildable;
+				// Draw upgrade & sell buttons
+				_upgradeButton.X = (int)b.X-32-12;
+				_upgradeButton.Y = (int)b.Y-24;
+				_sellButton.X = (int)b.X-32-12;
+				_sellButton.Y = (int)b.Y;
+				_upgradeButton.Update();
+				_sellButton.Update();
+				r.AddDrawable(_upgradeButton);
+				r.AddDrawable(_sellButton);
+				bool upgradeHover = _upgradeButton.IsMouseOver;
+				bool sellHover = _sellButton.IsMouseOver;
 
-				if(b != null)
+				// Light up the selected unit
+				_selectionHighlight[0].X = b.X;
+				_selectionHighlight[0].Y = b.Y;
+				_selectionHighlight[0].Color = sellHover ? PulseColor(SellColor) : upgradeHover ? UpgradeColor : SelectColor;
+				_selectionHighlight[0].Color.R /= 1.6f;
+				_selectionHighlight[0].Color.G /= 1.6f;
+				_selectionHighlight[0].Color.B /= 1.6f;
+				_selectionHighlight[0].Color.A = 0.0f;
+				r.AddDrawable(_selectionHighlight);
+
+				// Range circle around selected?
+				bool showSelectedCircle = b.CurrentUpgrade.Range > 0;
+				if(showSelectedCircle)
 				{
-					// Draw upgrade & sell buttons
-					_upgradeButton.X = (int)b.X-32-12;
-					_upgradeButton.Y = (int)b.Y-24;
-					_sellButton.X = (int)b.X-32-12;
-					_sellButton.Y = (int)b.Y;
-					_upgradeButton.Update();
-					_sellButton.Update();
-					r.AddDrawable(_upgradeButton);
-					r.AddDrawable(_sellButton);
-					bool upgradeHover = _upgradeButton.IsMouseOver;
-					bool sellHover = _sellButton.IsMouseOver;
-
-					// Light up the selected unit
-					_selectionHighlight[0].X = b.X;
-					_selectionHighlight[0].Y = b.Y;
-					_selectionHighlight[0].Color = sellHover ? PulseColor(SellColor) : upgradeHover ? UpgradeColor : SelectColor;
-					_selectionHighlight[0].Color.R /= 1.6f;
-					_selectionHighlight[0].Color.G /= 1.6f;
-					_selectionHighlight[0].Color.B /= 1.6f;
-					_selectionHighlight[0].Color.A = 0.0f;
-					r.AddDrawable(_selectionHighlight);
-
-					// Range circle around selected?
-					bool showSelectedCircle = b.CurrentUpgrade.Range > 0;
-					if(showSelectedCircle)
-					{
-						_selectedCircle.X = b.X;
-						_selectedCircle.Y = b.Y;
-						_selectedCircle.Radius = (float)b.CurrentUpgrade.Range;
-						r.AddDrawable(_selectedCircle);
-					}
+					_selectedCircle.X = b.X;
+					_selectedCircle.Y = b.Y;
+					_selectedCircle.Radius = (float)b.CurrentUpgrade.Range;
+					r.AddDrawable(_selectedCircle);
 				}
-				else
-					if(my < r.Height-HudToolbar.Height &&
-					   !_game.HasBuilding(mapx,mapy) &&
-					   _toolbar.SelectedIconIndex > 0)
-					{
-						_cursors[0][0].Frame = (byte)_toolbar.SelectedIcon.CursorFrame;
-						var c = _toolbar.SelectedIcon.CanBuy ?  PulseColor(HudToolbar.SelectedBuildableIconColor) : PulseColor(new Color4(0.2f,0.0f,0.0f,0.5f));
-						_cursors[0][0].Color = c;
-
-						// Indicate firing radius by drawing a circle around the cursor.
-						if(_toolbar.SelectedIcon.Range > 0)
-						{
-							_pointerCircle.X = cursorx;
-							_pointerCircle.Y = cursory;
-							_pointerCircle.Radius = (float)_toolbar.SelectedIcon.Range;
-							r.AddDrawable(_pointerCircle);
-						}
-
-						// If the Buildable is a tower, it'll have a weapon which is a separate image. Draw it.
-						if(_toolbar.SelectedIcon.WeaponIcon != null)
-						{
-							_cursors[1].Template = _toolbar.SelectedIcon.WeaponIcon.Template;
-							_cursors[1][0].X = cursorx;
-							_cursors[1][0].Y = cursory;
-							_cursors[1][0].Color = c;
-							r.AddDrawable(_cursors[1]);
-						}
-
-						r.AddDrawable(_cursors[0]);
-					}
 			}
+			else
+				if(my < r.Height-HudToolbar.Height &&
+				   !_game.HasBuilding(mapx,mapy) &&
+				   _toolbar.SelectedIconIndex > 0)
+				{
+					var icon = _toolbar.SelectedIcon;
+				
+					_cursors[0][0].Frame = (byte)icon.CursorFrame;
+					var c = _game.CanAfford(icon.Buildable) ?  PulseColor(HudToolbar.SelectedBuildableIconColor) : PulseColor(new Color4(0.2f,0.0f,0.0f,0.5f));
+					_cursors[0][0].Color = c;
+
+					// Indicate firing radius by drawing a circle around the cursor.
+					if(icon.Buildable.Range > 0)
+					{
+						_pointerCircle.X = cursorx;
+						_pointerCircle.Y = cursory;
+						_pointerCircle.Radius = (float)icon.Buildable.Range;
+						r.AddDrawable(_pointerCircle);
+					}
+
+					// If the Buildable is a tower, it'll have a weapon which is a separate image. Draw it.
+					if(icon.WeaponIcon != null)
+					{
+						_cursors[1].Template = icon.WeaponIcon.Template;
+						_cursors[1][0].X = cursorx;
+						_cursors[1][0].Y = cursory;
+						_cursors[1][0].Color = c;
+						r.AddDrawable(_cursors[1]);
+					}
+
+					r.AddDrawable(_cursors[0]);
+				}
 		}
 
 		public void ShowNextWaveWarning(string msg, int seconds)
